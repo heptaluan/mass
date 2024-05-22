@@ -1,31 +1,34 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './Login.scss'
 import { useHistory } from 'react-router-dom'
 import { LockOutlined, UserOutlined, BellOutlined } from '@ant-design/icons'
-import { Button, message, Form, Input } from 'antd'
+import { Button, Checkbox, Form, Input } from 'antd'
 import { getCodeImg, userLogin, getInfo } from '../../api/api'
 
 const Login = () => {
   const history = useHistory()
 
-  const [imgSrc, setImgSrc] = useState('')
-  const [uuid, setUuid] = useState('')
+  const formRef = useRef()
 
   const fetchCodeImg = async () => {
     const result = await getCodeImg()
-    if (result.data.code === 200 && result.data.img) {
-      setImgSrc('data:image/gif;base64,' + result.data.img)
-      setUuid(result.data.uuid)
-    }
+    // if (result.data.code === 200 && result.data.img) {
+    //   setImgSrc('data:image/gif;base64,' + result.data.img)
+    //   setUuid(result.data.uuid)
+    // }
   }
 
   useEffect(() => {
-    handleClearLocalStorage()
-    fetchCodeImg()
-  }, [])
+    // formRef.current.setFieldsValue({ username: '121212' })
+  })
+
+  // useEffect(() => {
+  //   handleClearLocalStorage()
+  //   fetchCodeImg()
+  // }, [])
 
   const onFinish = async values => {
-    history.push(`/patientTesting`)
+    history.push(`/PatientList`)
 
     // const params = {
     //   uuid: uuid,
@@ -54,7 +57,7 @@ const Login = () => {
   const handleChangeImg = async () => {
     fetchCodeImg()
   }
-  
+
   // 登录的时候清空暂存数据
   const handleClearLocalStorage = () => {
     localStorage.setItem('token', '')
@@ -64,19 +67,8 @@ const Login = () => {
   return (
     <div className="login-box-wrap">
       <div className="login-box">
-        <div class="top">
-          <div class="header">
-            <a href="/">
-              <img src="https://ai.feipankang.com/img/logo.02944b67.png" alt="logo" class="logo" />
-            </a>
-          </div>
-          <div class="desc">
-            <p>泰莱生物多组学商检管理系统</p>
-            <p>TaiLai Biological Multi-OMics Laboratory</p>
-          </div>
-        </div>
-
-        <div className="router-container">
+        <div className="login-container">
+          <div className='login-title'>账号密码登录</div>
           <Form
             name="normal_login"
             className="login-form"
@@ -84,20 +76,22 @@ const Login = () => {
               remember: true,
             }}
             onFinish={onFinish}
+            ref={formRef}
           >
             <Form.Item
               name="username"
               rules={[
                 {
                   required: true,
-                  message: '请输入用户名',
+                  message: '请输入账号',
                 },
               ]}
             >
               <Input
                 size="large"
                 prefix={<UserOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
-                placeholder="用户名"
+                placeholder="请输入账号"
+                autoComplete='new-user'
               />
             </Form.Item>
             <Form.Item
@@ -113,8 +107,16 @@ const Login = () => {
                 size="large"
                 prefix={<LockOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
                 type="password"
-                placeholder="密码"
+                placeholder="请输入密码"
+                autoComplete='new-password'
               />
+            </Form.Item>
+
+            <Form.Item name="remember" valuePropName="checked">
+              <div className='remember-box'>
+                <Checkbox>自动登录</Checkbox>
+                <a href="javascript:;">忘记密码</a>
+              </div>
             </Form.Item>
 
             <Form.Item>
@@ -123,6 +125,8 @@ const Login = () => {
               </Button>
             </Form.Item>
           </Form>
+
+          <div className='login-tips'>Copyright © 2023 <a href="javascript:;">泰莱生物科技</a></div>
         </div>
       </div>
     </div>

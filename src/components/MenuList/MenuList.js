@@ -11,11 +11,11 @@ const MenuList = props => {
   // 菜单切换
   const handleChangeMenu = e => {
     if (e.key === '1') {
-      history.push('/patientTesting')
+      history.push('/patientList')
     } else if (e.key === '2') {
       // history.push('/allotList')
     } else if (e.key === '3') {
-      // history.push('/patientTesting')
+      // history.push('/patientList')
     }
   }
 

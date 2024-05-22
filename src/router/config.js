@@ -1,6 +1,8 @@
 import IndexComponent from '../components/index'
 import Login from '../pages/Login/Login'
-import PatientTesting from '../pages/PatientTesting/PatientTesting'
+
+import PatientList from '../pages/PatientList/PatientList'
+import PatientDetail from '../pages/PatientDetail/PatientDetail'
 
 const routes = [
   {
@@ -13,8 +15,13 @@ const routes = [
         routes: [],
       },
       {
-        path: '/patientTesting',
-        component: PatientTesting,
+        path: '/patientList',
+        component: PatientList,
+        routes: [],
+      },
+      {
+        path: '/patientDetail',
+        component: PatientDetail,
         routes: [],
       },
     ],

@@ -1,65 +1,44 @@
 .login-box-wrap {
   width: 100%;
   min-height: 100%;
-  background: #f0f2f5 url(https://ai.feipankang.com/img/background.5825f033.svg) no-repeat 50%;
-  background-size: 100%;
-  padding: 110px 0 144px;
+  background: #f0f2f5 url(../../assets/login.png) no-repeat;
+  background-size: cover;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 
   .login-box {
-    display: flex;
-    width: 800px;
-    margin: 0 auto;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
+    margin-right: 20%;
+    width: 420px;
+    height: 440px;
+    background-color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 3px 6px);
+    box-shadow: rgba(255, 255, 255, 0) 0px 0px 1px;
+    border-radius: 16.5px;
+    transition: unset;
+    padding: 62px 50px;
 
-    .top {
-      flex: 1;
-      display: -ms-flexbox;
-      display: flex;
-      -ms-flex-direction: column;
-      flex-direction: column;
-      -ms-flex-pack: center;
-      justify-content: center;
-      text-align: center;
-
-      .header {
-        height: 176px;
-        line-height: 176px;
-
-        .logo {
-          height: 176px;
-        }
-      }
-
-      .desc {
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.45);
-        margin-top: 12px;
-        margin-bottom: 40px;
-
-        p {
-          margin-top: 0;
-          margin-bottom: 1em;
-          text-align: center;
-        }
-      }
+    .login-title {
+      font-size: 16px;
+      color: rgb(37, 153, 249);
+      font-weight: bold;
+      margin-bottom: 15px;
+      filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 6px 6px);
+      box-shadow: rgba(255, 255, 255, 0) 0px 0px 1px;
     }
 
-    .router-container {
-      min-width: 260px;
-      width: 368px;
-      margin: 0 auto;
+    .ant-input-affix-wrapper {
+      border-radius: 2.5px;
+      filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 3px 6px);
+      background-color: #fff;
+      font-size: 15px;
     }
   }
 
-  .code-img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 38px;
+  .remember-box {
+    display: flex;
+    justify-content: space-between;
   }
 
   .login-form-button {
@@ -67,6 +46,12 @@
     font-size: 16px;
     height: 40px;
     width: 100%;
+  }
+
+  .login-tips {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 40px;
   }
 }
 

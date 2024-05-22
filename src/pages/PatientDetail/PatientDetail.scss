@@ -23,7 +23,6 @@
       overflow-y: hidden;
 
       .search-box-wrap {
-        margin-bottom: 25px;
 
         .header {
           display: flex;
@@ -33,6 +32,7 @@
 
         .search-box {
           display: flex;
+          flex-wrap: wrap;
 
           .ant-input {
             margin-right: 20px;
@@ -43,6 +43,7 @@
             font-size: 14px;
             display: flex;
             align-items: center;
+            margin-bottom: 25px;
           }
         }
       }

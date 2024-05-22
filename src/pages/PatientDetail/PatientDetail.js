@@ -1,33 +1,63 @@
 import React, { useState, useEffect } from 'react'
-import './PatientTesting.scss'
+import './PatientDetail.scss'
 import { useHistory } from 'react-router-dom'
-import { Table, Select, Button, Space, message, Input } from 'antd'
+import { Table, Select, Button, Space, message, Input, DatePicker, InputNumber } from 'antd'
 import { getMissionList } from '../../api/api'
 import MenuList from '../../components/MenuList/MenuList'
 import HeaderList from '../../components/HeaderList/HeaderList'
 import BreadcrumbList from '../../components/BreadcrumbList/BreadcrumbList'
+import locale from 'antd/es/date-picker/locale/zh_CN'
 
-const PatientTesting = () => {
-  const [dataSource, setDataSource] = useState([])
+const PatientDetail = () => {
+  const [dataSource, setDataSource] = useState([
+    {
+      key: '1',
+      name: '胡彦斌',
+      sex: '1',
+      age: 32,
+      code: 'B202310110435',
+      createTime: '2023-10-11',
+      state: '1',
+      backup: '1212121'
+    },
+    {
+      key: '2',
+      name: '吴彦祖',
+      sex: '1',
+      age: 22,
+      code: 'B2023134640435',
+      createTime: '2023-09-11',
+      state: '0',
+      backup: '33333'
+    },
+  ])
 
   const doctorColumns = [
     {
-      title: '良性样本Id',
-      dataIndex: 'kyPrimaryId',
+      title: '序号',
+      dataIndex: 'key',
     },
     {
-      title: '审阅人',
-      dataIndex: 'createBy',
+      title: '姓名',
+      dataIndex: 'name',
     },
     {
-      title: '是否完成',
-      dataIndex: 'isFinish',
+      title: '性别',
+      dataIndex: 'sex',
       render: (_, record) => {
-        return record.isFinish === 1 ? <span style={{ color: '#73d13d' }}>完成</span> : <span style={{ color: '#ff4d4f' }}>未完成</span>
+        return record.sex === '1' ? '男' : '女'
       },
     },
     {
-      title: '创建时间',
+      title: '年龄',
+      dataIndex: 'age',
+    },
+    {
+      title: '患者编号',
+      dataIndex: 'code',
+    },
+    {
+      title: '检测日期',
       dataIndex: 'createTime',
       defaultSortOrder: 'descend',
       sorter: (a, b) => {
@@ -39,11 +69,23 @@ const PatientTesting = () => {
       showSorterTooltip: false,
     },
     {
+      title: '样品状态',
+      dataIndex: 'state',
+      render: (_, record) => {
+        return record.state === '1' ? '已检测' : '未检测'
+      },
+    },
+    {
+      title: '备注',
+      dataIndex: 'backup',
+    },
+    {
       title: '操作',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a onClick={() => handleShowDoctorDetail(record)}>查看详情</a>
+          <a onClick={() => handleShowDetectionInfo(record)}>查看检测信息</a>
+          <a onClick={() => handleShowReport(record)}>查看报告</a>
         </Space>
       ),
     },
@@ -142,17 +184,20 @@ const PatientTesting = () => {
     }
   }
 
-  // 普通医生详情
-  const handleShowDoctorDetail = record => {
-    localStorage.setItem('record', JSON.stringify(record))
-    localStorage.setItem('MissionList', JSON.stringify(pagination))
-    history.push(`/viewer?id=${record.id}&type=mission&from=${history.location.pathname}`)
+  // 查看检测信息
+  const handleShowDetectionInfo = record => {
+    console.log(1111);
+    history.push('/detectionInfo')
   }
 
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-    },
+  // 查看报告
+  const handleShowReport = record => {
+    console.log(1111);
+    history.push('/detectionInfo')
+  }
+
+  const onDatePickerChange = (date, dateString) => {
+    console.log(date, dateString)
   }
 
   return (
@@ -161,69 +206,114 @@ const PatientTesting = () => {
       <div className="patient-list-container-wrap">
         <div className="patient-list-container">
           <HeaderList />
-          <BreadcrumbList val={['首页', '患者检测与报告', '患者检测列表']} />
+          <BreadcrumbList val={['首页', '患者检测与报告', '患者检测详情']} />
           <div className="table-contetn">
+            {/* 查询 */}
             <div className="search-box-wrap">
               <div className="search-box">
                 <div className="srarch-label">
-                  <div>良性样本编号：</div>
+                  <div>姓名：</div>
                   <Input
                     value={searchId}
                     onChange={e => handleDoctorIdSearch(e.target.value)}
                     style={{ width: 200, marginLeft: 15 }}
-                    placeholder="请输入良性样本Id"
+                    placeholder="请输入姓名"
                   />
                 </div>
 
                 <div className="srarch-label">
-                  <div>完成状态：</div>
+                  <div>患者编号：</div>
+                  <Input
+                    value={searchId}
+                    onChange={e => handleDoctorIdSearch(e.target.value)}
+                    style={{ width: 200, marginLeft: 15 }}
+                    placeholder="请输入患者编号"
+                  />
+                </div>
+
+                <div className="srarch-label">
+                  <div>检测日期：</div>
+                  <DatePicker
+                    locale={locale}
+                    onChange={onDatePickerChange}
+                    style={{ width: 200, marginLeft: 15 }}
+                    placeholder="请输入检测日期"
+                  />
+                </div>
+
+                <div className="srarch-label">
+                  <div>年龄：</div>
+                  <InputNumber
+                    value={searchId}
+                    onChange={e => handleDoctorIdSearch(e.target.value)}
+                    style={{ width: 200, marginLeft: 15 }}
+                    placeholder="请输入年龄"
+                  />
+                </div>
+
+                <div className="srarch-label">
+                  <div>性别：</div>
                   <Select
                     value={isFinish}
                     style={{ width: 200 }}
                     onChange={handleIsFinishSearch}
+                    placeholder="请选择性别"
                     options={[
                       {
                         value: 0,
-                        label: '未完成',
+                        label: '男',
                       },
                       {
                         value: 1,
-                        label: '已完成',
+                        label: '女',
+                      },
+                    ]}
+                  />
+                </div>
+
+                <div className="srarch-label">
+                  <div>样品状态：</div>
+                  <Select
+                    value={isFinish}
+                    style={{ width: 200 }}
+                    onChange={handleIsFinishSearch}
+                    placeholder="请选择性别"
+                    options={[
+                      {
+                        value: 0,
+                        label: '待检测',
+                      },
+                      {
+                        value: 1,
+                        label: '已检测',
                       },
                     ]}
                   />
                 </div>
 
                 <Button style={{ marginLeft: 20 }} onClick={handleSearch} type="primary">
-                  搜索
+                  查询
                 </Button>
-                <Button onClick={handleReset} type="primary" style={{ marginLeft: 15 }}>
+                <Button onClick={handleReset} style={{ marginLeft: 15 }}>
                   重置
                 </Button>
               </div>
             </div>
+
+            <Button style={{ marginBottom: 20 }} onClick={handleSearch} type="primary">
+              新增检测信息
+            </Button>
+
             <Table
               scroll={{ x: 'max-content' }}
-              rowSelection={{
-                type: 'checkbox',
-                ...rowSelection,
-              }}
               onChange={onPageChange}
               pagination={{
                 current: pagination.current,
                 pageSize: pagination.pageSize,
                 total: pagination.total,
               }}
-              rowKey={record => (userInfo === 'chief' ? record.orderId : record.id)}
               dataSource={dataSource}
               columns={doctorColumns}
-              onRow={record => {
-                return {
-                  onDoubleClick: event => {
-                    console.log(event)
-                  },
-                }
-              }}
             />
           </div>
         </div>
@@ -232,4 +322,4 @@ const PatientTesting = () => {
   )
 }
 
-export default PatientTesting
+export default PatientDetail
