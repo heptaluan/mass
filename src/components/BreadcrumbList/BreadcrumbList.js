@@ -11,7 +11,7 @@ const BreadcrumbList = props => {
           <Breadcrumb.Item>{props.val[1]}</Breadcrumb.Item>
           <Breadcrumb.Item>{props.val[2]}</Breadcrumb.Item>
         </Breadcrumb>
-        <div className="current-title">{props.val[2]}</div>
+        <div className="current-title">{props.val.length === 3 ? props.val[2] : props.val[1]}</div>
       </div>
     </div>
   )

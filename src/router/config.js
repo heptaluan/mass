@@ -3,6 +3,9 @@ import Login from '../pages/Login/Login'
 
 import PatientList from '../pages/PatientList/PatientList'
 import PatientDetail from '../pages/PatientDetail/PatientDetail'
+import ReportList from '../pages/ReportList/ReportList'
+import QualityControl from '../pages/QualityControl/QualityControl'
+import UserControl from '../pages/UserControl/UserControl'
 
 const routes = [
   {
@@ -22,6 +25,21 @@ const routes = [
       {
         path: '/patientDetail',
         component: PatientDetail,
+        routes: [],
+      },
+      {
+        path: '/reportList',
+        component: ReportList,
+        routes: [],
+      },
+      {
+        path: '/qualityControl',
+        component: QualityControl,
+        routes: [],
+      },
+      {
+        path: '/userControl',
+        component: UserControl,
         routes: [],
       },
     ],

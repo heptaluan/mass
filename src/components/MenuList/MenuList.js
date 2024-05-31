@@ -13,9 +13,9 @@ const MenuList = props => {
     if (e.key === '1') {
       history.push('/patientList')
     } else if (e.key === '2') {
-      // history.push('/allotList')
+      history.push('/qualityControl')
     } else if (e.key === '3') {
-      // history.push('/patientList')
+      history.push('/userControl')
     }
   }
 

@@ -28,7 +28,7 @@ const Login = () => {
   // }, [])
 
   const onFinish = async values => {
-    history.push(`/PatientList`)
+    history.push(`/patientList`)
 
     // const params = {
     //   uuid: uuid,

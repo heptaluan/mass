@@ -91,6 +91,11 @@ const PatientList = () => {
     },
   ]
 
+  // 新增检测信息
+  const hancleAddNewPatientDetail = () => {
+    history.push('/patientDetail')
+  }
+
   // 查看检测信息
   const handleShowPatientDetail = record => {
     history.push('/patientDetail')
@@ -98,7 +103,7 @@ const PatientList = () => {
 
   // 查看报告
   const handleShowReport = record => {
-    
+    history.push('/reportList')
   }
 
   const history = useHistory()
@@ -298,7 +303,7 @@ const PatientList = () => {
               </div>
             </div>
 
-            <Button style={{ marginBottom: 20 }} onClick={handleSearch} type="primary">
+            <Button style={{ marginBottom: 20 }} onClick={hancleAddNewPatientDetail} type="primary">
               新增检测信息
             </Button>
 

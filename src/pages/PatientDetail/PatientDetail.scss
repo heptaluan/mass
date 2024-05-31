@@ -1,29 +1,21 @@
-.patient-list-box {
+.patient-detail-box {
   width: 100%;
   height: 100%;
   display: flex;
   background-color: rgb(244, 244, 244);
 
-  .patient-list-container-wrap {
+  .patient-detail-container-wrap {
     width: 100%;
     height: 100%;
     background: rgb(240, 242, 245);
 
-    .table-contetn {
-      margin: 15px;
-      padding: 25px;
-      background: #fff;
-    }
-
-    .patient-list-container {
+    .patient-detail-container {
       width: 100%;
       height: 100%;
       position: relative;
       z-index: 2;
-      overflow-y: hidden;
 
       .search-box-wrap {
-
         .header {
           display: flex;
           align-items: center;
@@ -44,6 +36,176 @@
             display: flex;
             align-items: center;
             margin-bottom: 25px;
+          }
+        }
+      }
+
+      .table-contetn {
+        margin: 15px;
+        padding: 25px;
+        background: #fff;
+        max-height: calc(100% - 180px);
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+          width: 6px;
+          height: 1px;
+        }
+      
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          box-shadow: inset 0 0 5px rgb(231,232,233);
+          background: rgb(231,232,233);
+        }
+      
+        &::-webkit-scrollbar-track {
+          box-shadow: inset 0 0 5px rgb(231,232,233);
+          border-radius: 10px;
+          background: #ededed;
+        }
+
+        .sub-title {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+
+        .table-content {
+          .tible-title {
+            width: 100%;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+            border-bottom: 1px solid rgb(235, 238, 245);
+
+            & > div {
+              width: 140px;
+              font-size: 14px;
+              font-weight: bold;
+            }
+          }
+
+          .table-list {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 55px;
+            border-bottom: 1px solid rgb(235, 238, 245);
+
+            &:nth-child(even) {
+              background-color: rgb(250, 250, 250);
+            }
+
+            & > div {
+              width: 140px;
+              text-align: center;
+              font-size: 14px;
+              font-weight: bold;
+            }
+
+            & > div:last-child {
+              display: flex;
+              align-items: center;
+            }
+          }
+        }
+
+        .table-result {
+          width: 100%;
+          margin-top: 45px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .score-box {
+            span:first-child {
+              font-size: 18px;
+              font-weight: bold;
+              margin-right: 15px;
+            }
+
+            span:last-child {
+              font-size: 18px;
+              color: red;
+            }
+          }
+
+          .btn-group {
+            margin: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+
+            .btn-upload {
+              width: 80px;
+              height: 32px;
+              line-height: 32px;
+              border-radius: 2.5px;
+              text-align: center;
+              font-size: 14px;
+              background-color: rgb(24, 144, 255);
+              color: #fff;
+              cursor: pointer;
+
+              &:hover {
+                transition: all 0.3s;
+                background-color: rgb(67, 168, 243);
+              }
+            }
+
+            .btn-computed {
+              width: 80px;
+              height: 32px;
+              line-height: 32px;
+              border-radius: 2.5px;
+              text-align: center;
+              font-size: 14px;
+              background-color: rgb(24, 144, 255);
+              color: #fff;
+              cursor: pointer;
+              margin: 0 25px;
+
+              &:hover {
+                transition: all 0.3s;
+                background-color: rgb(67, 168, 243);
+              }
+            }
+
+            .btn-report {
+              width: 120px;
+              height: 32px;
+              line-height: 32px;
+              border-radius: 2.5px;
+              text-align: center;
+              font-size: 14px;
+              background-color: rgb(25, 190, 107);
+              color: #fff;
+              cursor: pointer;
+            }
+          }
+
+          .btn-backup {
+            width: 80px;
+            height: 32px;
+            line-height: 32px;
+            border-radius: 2.5px;
+            text-align: center;
+            font-size: 14px;
+            background-color: rgb(255, 240, 243);
+            color: rgba(0, 0, 0, 0.85);
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            user-select: none;
+
+            &:hover {
+              transition: all 0.3s;
+              color: rgb(24, 144, 255);
+              border: 1px solid rgb(24, 144, 255);
+            }
           }
         }
       }
