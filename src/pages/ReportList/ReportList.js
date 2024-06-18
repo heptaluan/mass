@@ -15,7 +15,38 @@ const ReportList = () => {
   const [isFinish, setIsFinish] = useState(0)
   const [searchId, setSearchId] = useState('')
 
-  const [tableData, setTableData] = useState(['尿酸', '肌酐', '苯丙氨酸', '组氨酸', '精氨酸', '缬氨酸', '亮氨酸', '葡萄糖', '尿素'])
+  const [testingData, setTestingData] = useState([
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+    {
+      name: '尿酸',
+      measuredValue: '256μmol/L',
+      range: '150-416μmol/L',
+    },
+  ])
 
   // 获取列表数据
   const fetchMissionList = async () => {
@@ -53,7 +84,91 @@ const ReportList = () => {
           <HeaderList />
           <BreadcrumbList val={['首页', '患者检测与报告', '患者检测报告']} />
           <div className="report-contetn">
-            123
+            <div className="report-box">
+              <div className="report-title">检 测 报 告</div>
+
+              <div className="report-code">
+                <div>报告编号：</div>
+                <div>A2023004328</div>
+              </div>
+
+              <div className="user-info">
+                <div className="list">
+                  <div>患者姓名</div>
+                  <div>王建强</div>
+                </div>
+                <div className="list">
+                  <div>性别</div>
+                  <div>男</div>
+                </div>
+                <div className="list">
+                  <div>年龄</div>
+                  <div>51</div>
+                </div>
+              </div>
+
+              <div className="patient-code">
+                <div className="list">
+                  <div>患者编号</div>
+                  <div>王建强</div>
+                </div>
+                <div className="list">
+                  <div>检测日期</div>
+                  <div>2023-10-11</div>
+                </div>
+              </div>
+
+              <div className="testing-content">
+                <div className="testing-title">检测项目</div>
+                <div className="testing-table">
+                  <div className="table-title">
+                    <div>名称</div>
+                    <div>测定值</div>
+                    <div>参考范围</div>
+                    <div>提示</div>
+                  </div>
+
+                  {testingData?.map((item, index) => (
+                    <div key={index} className="table-list">
+                      <div>{item.name}</div>
+                      <div>{item.measuredValue}</div>
+                      <div>{item.range}</div>
+                      <div></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="backup">
+                <div className="list">
+                  <div>备注</div>
+                  <div>123</div>
+                </div>
+              </div>
+
+              <div className="score">
+                <div className="list">
+                  <div>评分</div>
+                  <div>87.45</div>
+                </div>
+              </div>
+
+              <div className="assessing">
+                <div className="list">
+                  <div>审批人员：</div>
+                  <div>李梅</div>
+                </div>
+                <div className="list">
+                  <div>报告时间：</div>
+                  <div>2023-10-13</div>
+                </div>
+              </div>
+
+              <div className="btn-download">下载电子版本</div>
+              <div className="btn-backup" onClick={() => history.push('/patientDetail')}>
+                返回
+              </div>
+            </div>
           </div>
         </div>
       </div>

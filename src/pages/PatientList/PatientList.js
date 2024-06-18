@@ -18,7 +18,7 @@ const PatientList = () => {
       code: 'B202310110435',
       createTime: '2023-10-11',
       state: '1',
-      backup: '1212121'
+      backup: '1212121',
     },
     {
       key: '2',
@@ -28,7 +28,7 @@ const PatientList = () => {
       code: 'B2023134640435',
       createTime: '2023-09-11',
       state: '0',
-      backup: '33333'
+      backup: '33333',
     },
   ])
 
@@ -86,6 +86,7 @@ const PatientList = () => {
         <Space size="middle">
           <a onClick={() => handleShowPatientDetail(record)}>查看检测信息</a>
           <a onClick={() => handleShowReport(record)}>查看报告</a>
+          <a onClick={() => handleDelPatientDetail(record)}>删除</a>
         </Space>
       ),
     },
@@ -96,15 +97,16 @@ const PatientList = () => {
     history.push('/patientDetail')
   }
 
-  // 查看检测信息
+  // 表格按钮组
   const handleShowPatientDetail = record => {
     history.push('/patientDetail')
   }
 
-  // 查看报告
   const handleShowReport = record => {
     history.push('/reportList')
   }
+
+  const handleDelPatientDetail = record => {}
 
   const history = useHistory()
   const [userInfo, setUserInfo] = useState('')

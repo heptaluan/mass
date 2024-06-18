@@ -68,7 +68,7 @@ const Login = () => {
     <div className="login-box-wrap">
       <div className="login-box">
         <div className="login-container">
-          <div className='login-title'>账号密码登录</div>
+          <div className="login-title">账号密码登录</div>
           <Form
             name="normal_login"
             className="login-form"
@@ -91,7 +91,7 @@ const Login = () => {
                 size="large"
                 prefix={<UserOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
                 placeholder="请输入账号"
-                autoComplete='new-user'
+                autoComplete="new-user"
               />
             </Form.Item>
             <Form.Item
@@ -108,12 +108,12 @@ const Login = () => {
                 prefix={<LockOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
                 type="password"
                 placeholder="请输入密码"
-                autoComplete='new-password'
+                autoComplete="new-password"
               />
             </Form.Item>
 
             <Form.Item name="remember" valuePropName="checked">
-              <div className='remember-box'>
+              <div className="remember-box">
                 <Checkbox>自动登录</Checkbox>
                 <a href="javascript:;">忘记密码</a>
               </div>
@@ -126,7 +126,9 @@ const Login = () => {
             </Form.Item>
           </Form>
 
-          <div className='login-tips'>Copyright © 2023 <a href="javascript:;">泰莱生物科技</a></div>
+          <div className="login-tips">
+            Copyright © 2023 <a href="javascript:;">泰莱生物科技</a>
+          </div>
         </div>
       </div>
     </div>

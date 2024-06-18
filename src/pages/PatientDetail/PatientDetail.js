@@ -176,13 +176,25 @@ const PatientDetail = () => {
               </div>
 
               <div className="btn-group">
-                <div className="btn-upload">文件上传</div>
-                <div className="btn-computed">计算</div>
-                <div className="btn-report" onClick={handleShowReport}>查看报告</div>
-              </div>
-
-              <div className="btn-backup" onClick={handleBackUp}>
-                返 回
+                <Button style={{ marginRight: 10 }} type="primary">
+                  保存
+                </Button>
+                <Button style={{ marginRight: 10 }} type="primary">
+                  浓度计算
+                </Button>
+                <Button style={{ marginRight: 10 }} type="primary">
+                  评分计算
+                </Button>
+                <Button
+                  style={{ backgroundColor: 'rgb(25, 190, 107)', border: '1px solid rgb(25, 190, 107)', marginRight: 10 }}
+                  type="primary"
+                  onClick={handleShowReport}
+                >
+                  查看报告
+                </Button>
+                <Button style={{ backgroundColor: 'rgb(255, 240, 243)', border: '1px solid rgba(0, 0, 0, 0.15)' }} onClick={handleBackUp}>
+                  返 回
+                </Button>
               </div>
             </div>
           </div>
