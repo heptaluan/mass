@@ -10,7 +10,7 @@
       </div>
       <template #overlay>
         <a-menu @click="handleSetUserSetting">
-          <a-menu-item
+          <!-- <a-menu-item
             class="menu-list"
             key="1"
             v-if="!router.currentRoute.value.path.includes('configurations')"
@@ -24,9 +24,9 @@
               !router.currentRoute.value.path.includes('configurations')
             "
             >系统设置</a-menu-item
-          >
+          > -->
           <!-- <a-menu-item class="menu-list" key="3">使用说明</a-menu-item> -->
-          <a-menu-item class="menu-list" key="4">关于</a-menu-item>
+          <!-- <a-menu-item class="menu-list" key="4">关于</a-menu-item> -->
           <a-menu-item class="menu-list menu-border-top" key="5"
             >退出</a-menu-item
           >
@@ -34,11 +34,11 @@
       </template>
     </a-dropdown>
 
-    <UserInstructionsModal ref="instructionsModal" />
+    <!-- <UserInstructionsModal ref="instructionsModal" />
     <UserAboutModal ref="aboutModal" />
     <UserSettingsModal ref="settingsModal" />
+    <PersonalModal ref="personalModal" /> -->
     <LogoutModal ref="logoutModal" />
-    <PersonalModal ref="personalModal" />
   </div>
 </template>
 
@@ -52,11 +52,11 @@ import { getVersion } from "@/api";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
 import { useUserStore } from "@/store/modules/user";
 
-import UserAboutModal from "./UserAboutModal.vue";
-import UserInstructionsModal from "./UserInstructionsModal.vue";
-import UserSettingsModal from "./UserSettingsModal.vue";
+// import UserAboutModal from "./UserAboutModal.vue";
+// import UserInstructionsModal from "./UserInstructionsModal.vue";
+// import UserSettingsModal from "./UserSettingsModal.vue";
 import LogoutModal from "@/components/Logout";
-import PersonalModal from "./PersonalModal.vue";
+// import PersonalModal from "./PersonalModal.vue";
 
 const userStore = useUserStore();
 

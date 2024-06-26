@@ -145,7 +145,7 @@ body {
     border: 1px solid rgb(89, 89, 93) !important;
 
     .menu-border-top {
-      border-top: 1px dashed rgb(89, 89, 93);
+      // border-top: 1px dashed rgb(89, 89, 93);
       // margin-top: 3px !important;
     }
 

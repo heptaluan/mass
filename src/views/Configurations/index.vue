@@ -26,9 +26,9 @@
     </div>
     <div class="panel-wrap">
       <div class="header">
-        <div class="back" @click="backHandler">
-          <span class="icon"><icon-font type="icon-back01" /></span>
-          <span>返回</span>
+        <div class="back">
+          <!-- <span class="icon"><icon-font type="icon-back01" /></span>
+          <span>返回</span> -->
         </div>
         <!-- <div class="title main">系统设置</div> -->
         <div class="system user-setting" v-if="user">
@@ -50,7 +50,7 @@ import { createFromIconfontCN } from "@ant-design/icons-vue";
 import IconFontUrl from "../../assets/iconFont";
 import { onMounted, onUnmounted, watch, ref, reactive } from "vue";
 import { useUserStore } from "@/store/modules/user";
-import UserSetting from "../Viewports/UserSetting.vue";
+import UserSetting from "./UserSetting.vue";
 
 const userStore = useUserStore();
 let currentTime = ref(new Date().toLocaleString());

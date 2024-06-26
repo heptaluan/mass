@@ -7,24 +7,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Main',
-    redirect: '/studyList',
     component: () => import('@/views/layouts/index.vue'),
     children: [
-      {
-        path: '/studyList',
-        name: 'studyList',
-        component: () => import(/* webpackChunkName: "about1" */ '@/views/StudyList/index.vue')
-      },
-      {
-        path: '/viewport/:uid',
-        name: 'viewport',
-        component: () => import(/* webpackChunkName: "about2" */ '@/views/Viewport/index.vue')
-      },
-      {
-        path: '/viewports/:uid',
-        name: 'viewports',
-        component: () => import(/* webpackChunkName: "about2" */ '@/views/Viewports/Viewport.vue')
-      },
       {
         path: '/configurations',
         name: 'configurations',
