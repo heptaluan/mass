@@ -6,7 +6,7 @@
         <div class="functionArea">
           <div class="searchArea">
             <div class="searchBox">
-              <label style="width: 100px">姓名：</label>
+              <label>姓名：</label>
               <a-input
                 style="width: 150px"
                 ref="searchInput"
@@ -16,8 +16,9 @@
                 allow-clear
               />
             </div>
+
             <div class="searchBox">
-              <label style="width: 100px">样本编号：</label>
+              <label>样本编号：</label>
               <a-input
                 style="width: 150px"
                 ref="searchInput"
@@ -26,6 +27,51 @@
                 placeholder="请输入样本编号"
                 allow-clear
               />
+            </div>
+
+            <div class="searchBox">
+              <label>检测日期：</label>
+              <a-date-picker
+                style="width: 150px"
+                placeholder="请选择检测日期"
+                allow-clear
+              />
+            </div>
+
+            <div class="searchBox">
+              <label>年龄：</label>
+              <a-input-number
+                style="width: 150px"
+                ref="searchInput"
+                v-model:value="searchForm.name"
+                @change="changeClear(searchForm.name)"
+                placeholder="请输入年龄"
+                allow-clear
+              />
+            </div>
+
+            <div class="searchBox">
+              <label>性别：</label>
+              <a-select
+                style="width: 150px"
+                v-model:value="searchForm.name"
+                placeholder="请选择性别"
+              >
+                <a-select-option value="0">男</a-select-option>
+                <a-select-option value="1">女</a-select-option>
+              </a-select>
+            </div>
+
+            <div class="searchBox">
+              <label>样本状态：</label>
+              <a-select
+                style="width: 150px"
+                v-model:value="searchForm.name"
+                placeholder="请选择样本状态"
+              >
+                <a-select-option value="0">待检测</a-select-option>
+                <a-select-option value="1">已检测</a-select-option>
+              </a-select>
             </div>
           </div>
           <div class="btnArea">
@@ -297,6 +343,7 @@ defineExpose({});
         label {
           align-self: center;
           color: white;
+          width: max-content;
         }
         .ant-input-affix-wrapper {
           display: flex !important;
