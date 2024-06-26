@@ -64,8 +64,8 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.key === 'operation'">
-                <span class="icon">查看检测信息</span>
-                <span class="icon">查看报告</span>
+                <span class="icon" @click="jumpTo('detail')">查看检测信息</span>
+                <span class="icon" @click="jumpTo('report')">查看报告</span>
                 <span class="icon">删除</span>
                 <!-- <span class="icon" @click="editItem(record)"
                   ><icon-font type="icon-bianji"
@@ -74,7 +74,6 @@
                   ><icon-font type="icon-refresh"
                 /></span> -->
               </template>
-              
             </template>
           </a-table>
         </div>
@@ -91,6 +90,7 @@
 </template>
 
 <script setup>
+import router from "@/router";
 import { message } from "ant-design-vue";
 import { createFromIconfontCN } from "@ant-design/icons-vue";
 import IconFontUrl from "../../../assets/iconFont";
@@ -224,10 +224,14 @@ const addUser = (id) => {
   userModal.value.openModal(true, id);
 };
 
-const editItem = (record) => {
-  userModal.value.openModal(true, record);
+// 跳转
+const jumpTo = (target) => {
+  if (target === "detail") {
+    router.push({ name: "patientDetail" });
+  } else if (target === "report") {
+    router.push({ name: "reportList" });
+  }
 };
-
 
 const resetPassword = (record) => {
   console.log(record);
@@ -339,7 +343,8 @@ defineExpose({});
             cursor: pointer;
           }
 
-          &:nth-child(1), &:nth-child(2) {
+          &:nth-child(1),
+          &:nth-child(2) {
             margin-right: 20px;
           }
 

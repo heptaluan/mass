@@ -65,60 +65,65 @@ const state = reactive({
 });
 
 const menu = ref([
+  // {
+  //   label: "部门管理",
+  //   key: "1",
+  //   url: "/configurations/department",
+  //   icon: "icon-bumenguanli",
+  // },
+  // {
+  //   label: "参数管理",
+  //   key: "3",
+  //   url: "/configurations/parameter",
+  //   icon: "icon-weibiaoti11",
+  // },
+  // {
+  //   label: "文件存储管理",
+  //   key: "5",
+  //   url: "/configurations/fileStore",
+  //   icon: "icon-yingpan",
+  // },
+  // {
+  //   label: "PACS服务管理",
+  //   key: "6",
+  //   url: "/configurations/pacs",
+  //   icon: "icon-fenxiang01",
+  // },
+  // {
+  //   label: "网络安全管理",
+  //   key: "7",
+  //   url: "/configurations/safe",
+  //   icon: "icon-wangluoanquan",
+  // },
+  // {
+  //   label: "系统日志管理",
+  //   key: "8",
+  //   url: "/configurations/log",
+  //   icon: "icon-diannao",
+  // },
+  // {
+  //   label: "系统授权",
+  //   key: "9",
+  //   url: "/configurations/authorization",
+  //   icon: "icon-denglushouquan",
+  // },
   {
-    label: "部门管理",
+    label: "患者检测与报告",
     key: "1",
-    url: "/configurations/department",
-    icon: "icon-bumenguanli",
+    url: "/configurations/patientList",
+    icon: "icon-denglushouquan",
   },
   {
-    label: "用户管理",
+    label: "质控管理",
     key: "2",
-    url: "/configurations/user",
-    icon: "icon-denglu-copy",
-  },
-  {
-    label: "参数管理",
-    key: "3",
-    url: "/configurations/parameter",
-    icon: "icon-weibiaoti11",
-  },
-  // {label: '深度学习管理', key: '4', url: '/configurations/deepLearning', icon: "icon-cpu"},
-  {
-    label: "文件存储管理",
-    key: "5",
-    url: "/configurations/fileStore",
-    icon: "icon-yingpan",
-  },
-  {
-    label: "PACS服务管理",
-    key: "6",
-    url: "/configurations/pacs",
-    icon: "icon-fenxiang01",
-  },
-  {
-    label: "网络安全管理",
-    key: "7",
-    url: "/configurations/safe",
-    icon: "icon-wangluoanquan",
-  },
-  {
-    label: "系统日志管理",
-    key: "8",
-    url: "/configurations/log",
+    url: "/configurations/qcList",
     icon: "icon-diannao",
   },
   {
-    label: "系统授权",
-    key: "9",
-    url: "/configurations/authorization",
-    icon: "icon-denglushouquan",
-  },
-  {
-    label: "患者检测与报告",
-    key: "10",
-    url: "/configurations/patientList",
-    icon: "icon-denglushouquan",
+    label: "用户管理",
+    key: "3",
+    url: "/configurations/user",
+    icon: "icon-denglu-copy",
   },
 ]);
 

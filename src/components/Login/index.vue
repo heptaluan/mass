@@ -86,7 +86,7 @@ const submit = async (values: any) => {
     loadingSwitch(false);
 
     if (res && res["token"]) {
-      router.push({ name: "studyList" });
+      router.push({ name: "patientList" });
       if (res["certificationStatus"] !== "02") {
         message.warning({
           content: () => "平台未授权，部分功能将禁用",

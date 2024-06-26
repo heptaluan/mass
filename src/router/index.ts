@@ -93,6 +93,16 @@ const routes: Array<RouteRecordRaw> = [
             name: 'patientDetail',
             component: () => import(/* webpackChunkName: "about1" */ '@/views/Configurations/patientDetail/index.vue')
           },
+          {
+            path: 'reportList',
+            name: 'reportList',
+            component: () => import(/* webpackChunkName: "about1" */ '@/views/Configurations/reportList/index.vue')
+          },
+          {
+            path: 'qcList',
+            name: 'qcList',
+            component: () => import(/* webpackChunkName: "about1" */ '@/views/Configurations/qcList/index.vue')
+          },
         ]
       },
     ]

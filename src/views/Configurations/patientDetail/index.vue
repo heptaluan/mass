@@ -1,8 +1,10 @@
 <template>
   <div>
-    <breadcrumb :title="'患者检测列表'" />
+    <breadcrumb :title="'患者检测详情'" />
     <div class="area">
       <div class="tableArea">
+        <!-- 患者信息 -->
+        <div class="sub-title">患者信息</div>
         <div class="functionArea">
           <div class="searchArea">
             <div class="searchBox">
@@ -28,62 +30,84 @@
               />
             </div>
           </div>
-          <div class="btnArea">
-            <a-button block type="info" class="generalBtn" @click="search">
-              查询
-            </a-button>
-            <a-button block type="info" class="generalBtn" @click="search">
-              重置
-            </a-button>
+        </div>
+
+        <!-- 检测信息 -->
+        <div className="sub-title">检测信息</div>
+
+        <div className="table-content">
+          <div className="tible-title">
+            <div>检测项目</div>
+            <div>待测物质荷比</div>
+            <div>内标质荷比</div>
+            <div>质量精度(ppm)</div>
+            <div>浓度</div>
+          </div>
+          <div>
+            <div v-for="item in tableData" :key="item.id">
+              <div className="table-list">
+                <div>{{ item.name }}</div>
+                <div>
+                  <a-input-number
+                    disabled
+                    style="width: 140px"
+                    placeholder="待测物质荷比"
+                  />
+                </div>
+                <div>
+                  <a-input-number
+                    disabled
+                    style="width: 140px"
+                    placeholder="内标质荷比"
+                  />
+                </div>
+                <div>
+                  <a-input-number
+                    :value="item.value"
+                    style="width: 140px"
+                    placeholder="待测物质荷比"
+                  />
+                </div>
+                <div>
+                  <a-input-number
+                    disabled
+                    style="width: 140px"
+                    placeholder="浓度"
+                  />
+                  μmol/L
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <a-button
-          style="margin-bottom: 25px"
-          block
-          type="info"
-          class="generalBtn"
-          @click="(e) => addUser(null)"
-        >
-          新增
-        </a-button>
+        <!-- 结果按钮组 -->
+        <div className="table-result">
+          <div className="score-box">
+            <span>评分</span>
+            <span>87.42</span>
+          </div>
 
-        <div class="tableBox">
-          <a-table
-            :data-source="userList"
-            :columns="columns"
-            :row-key="(record) => record.id"
-            :pagination="pagination"
-            bordered
-          >
-            <template #bodyCell="{ column, record, index }">
-              <template v-if="column.key === 'deptId'">
-                {{ record.deptName }}
-              </template>
-              <template v-if="column.key === 'orderNum'">
-                {{ index + 1 }}
-              </template>
-              <template v-if="column.key === 'operation'">
-                <span class="icon">查看检测信息</span>
-                <span class="icon">查看报告</span>
-                <span class="icon">删除</span>
-                <!-- <span class="icon" @click="editItem(record)"
-                  ><icon-font type="icon-bianji"
-                /></span>
-                <span class="icon" @click="resetPassword(record)"
-                  ><icon-font type="icon-refresh"
-                /></span> -->
-              </template>
-              
-            </template>
-          </a-table>
+          <div className="btn-group">
+            <a-button style="margin-right: 10px" type="primary">
+              保存
+            </a-button>
+            <a-button style="margin-right: 10px" type="primary">
+              浓度计算
+            </a-button>
+            <a-button style="margin-right: 10px" type="primary">
+              评分计算
+            </a-button>
+            <a-button @click="jumpTo('report')" style="margin-right: 10px" type="primary">
+              查看报告
+            </a-button>
+            <a-button @click="jumpTo('back')" style="margin-right: 10px" type="primary">
+              返回
+            </a-button>
+          </div>
         </div>
       </div>
-      <UserModal
-        ref="userModal"
-        :departmentList="departmentList"
-        @initList="initList"
-      />
+
       <ConfirmModal ref="confirmModal" @initList="initList"></ConfirmModal>
       <ImportModal ref="importModal" @initList="initList"></ImportModal>
     </div>
@@ -91,6 +115,7 @@
 </template>
 
 <script setup>
+import router from "@/router";
 import { message } from "ant-design-vue";
 import { createFromIconfontCN } from "@ant-design/icons-vue";
 import IconFontUrl from "../../../assets/iconFont";
@@ -105,7 +130,6 @@ import {
 } from "vue";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
 import { getUserList, getDeptTree } from "@/api";
-import UserModal from "./userModal";
 import ConfirmModal from "../confirmModal";
 
 import breadcrumb from "../breadcrumb.vue";
@@ -113,6 +137,34 @@ import breadcrumb from "../breadcrumb.vue";
 const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
 });
+
+const tableData = ref([
+  {
+    id: 1,
+    name: "尿酸",
+    value: 2000,
+  },
+  {
+    id: 2,
+    name: "肌酐",
+    value: 2000,
+  },
+  {
+    id: 3,
+    name: "苯丙氨酸",
+    value: 2000,
+  },
+  {
+    id: 4,
+    name: "亮氨酸",
+    value: 2000,
+  },
+  {
+    id: 5,
+    name: "精氨酸",
+    value: 2000,
+  },
+]);
 
 let userList = ref([]);
 
@@ -167,7 +219,6 @@ const initialState = {
   deptId: undefined,
 };
 
-let userModal = ref(null);
 let confirmModal = ref(null);
 let importModal = ref(null);
 const searchForm = reactive({ ...initialState });
@@ -220,14 +271,6 @@ const initList = (status, page) => {
 const search = () => {
   initList("search", 1);
 };
-const addUser = (id) => {
-  userModal.value.openModal(true, id);
-};
-
-const editItem = (record) => {
-  userModal.value.openModal(true, record);
-};
-
 
 const resetPassword = (record) => {
   console.log(record);
@@ -254,7 +297,14 @@ const pagination = reactive({
   onChange: handleChangePage,
 });
 
-defineExpose({});
+// 跳转
+const jumpTo = (target) => {
+  if (target === 'report') {
+    router.push({ name: "reportList" });
+  } else if (target === 'back') {
+    router.push({ name: "patientList" });
+  }
+};
 </script>
 
 <style scoped>
@@ -265,6 +315,14 @@ defineExpose({});
   .tableArea {
     width: 100%;
   }
+
+  .sub-title {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
   .generalBtn {
     width: 100px !important;
     height: 32px !important;
@@ -325,32 +383,82 @@ defineExpose({});
       }
     }
   }
-  .tableBox {
-    :deep(.ant-table) {
-      .ant-table-cell {
-        color: white;
-        background-color: #444648 !important;
-        .ant-switch-checked {
-          background-color: #11c76bb5;
-        }
-        .icon {
-          &:hover {
-            color: #b1e5f8;
-            cursor: pointer;
-          }
 
-          &:nth-child(1), &:nth-child(2) {
-            margin-right: 20px;
-          }
+  // 表格部分
+  .table-content {
+    color: #fff;
 
-          .anticon {
-            font-size: 20px;
-            svg {
-              color: white;
-            }
-          }
-        }
+    .tible-title {
+      width: 100%;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      border-bottom: 1px solid rgb(235, 238, 245);
+
+      & > div {
+        width: 140px;
+        font-size: 14px;
+        font-weight: bold;
       }
+    }
+
+    .table-list {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 55px;
+      border-bottom: 1px solid rgb(235, 238, 245);
+
+      &:nth-child(even) {
+        background-color: rgb(250, 250, 250);
+      }
+
+      & > div {
+        width: 140px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      & > div:last-child {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  // 底部按钮组
+  .table-result {
+    width: 100%;
+    margin-top: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .score-box {
+      color: #fff;
+
+      span:first-child {
+        font-size: 18px;
+        font-weight: bold;
+        margin-right: 15px;
+      }
+
+      span:last-child {
+        font-size: 18px;
+        color: red;
+      }
+    }
+
+    .btn-group {
+      margin: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
     }
   }
 }

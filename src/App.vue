@@ -164,4 +164,10 @@ body {
     }
   }
 }
+
+.ant-picker {
+  color: #999 !important;
+  background-color: rgb(36, 44, 44) !important;
+  border-color: #64686d !important;
+}
 </style>
