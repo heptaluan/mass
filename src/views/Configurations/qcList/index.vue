@@ -42,7 +42,19 @@
                     <div>{{ item.qualityState }}</div>
                     <div className="time-box">{{ item.time }}</div>
                     <div className="upload-box">
-                      <a-button type="primary">文件上传</a-button>
+                      <a-upload
+                        name="file"
+                        accept=".txt"
+                        @change="handleChange"
+                        :before-upload="beforeUpload"
+                        :customRequest="(e) => handleUpload(e, item.id, 'L')"
+                        :multiple="true"
+                        :show-upload-list="false"
+                      >
+                        <a-button class="submitBtn">
+                          <span> 上 传 </span>
+                        </a-button>
+                      </a-upload>
                     </div>
                   </div>
                 </div>
@@ -56,11 +68,11 @@
             <div className="table-content">
               <div className="tible-title">
                 <div>检测项目</div>
-                <div>待测物质荷比</div>
-                <div>内标质荷比</div>
-                <div>质量精度(ppm)</div>
-                <div>浓度</div>
-                <em style="width: 30%"></em>
+                <div>靶值</div>
+                <div>实测值</div>
+                <div>质控状态</div>
+                <div>操作时间</div>
+                <div>选择文件</div>
               </div>
               <div>
                 <div v-for="item in tableOneData" :key="item.id">
@@ -85,7 +97,19 @@
                     <div>{{ item.qualityState }}</div>
                     <div className="time-box">{{ item.time }}</div>
                     <div className="upload-box">
-                      <a-button type="primary">文件上传</a-button>
+                      <a-upload
+                        name="file"
+                        accept=".txt"
+                        @change="handleChange"
+                        :before-upload="beforeUpload"
+                        :customRequest="(e) => handleUpload(e, item.id, 'L')"
+                        :multiple="true"
+                        :show-upload-list="false"
+                      >
+                        <a-button class="submitBtn">
+                          <span> 上 传 </span>
+                        </a-button>
+                      </a-upload>
                     </div>
                   </div>
                 </div>
@@ -113,100 +137,102 @@ import {
   nextTick,
 } from "vue";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
-import { getUserList, getDeptTree } from "@/api";
+import { getQCList, getItemMap } from "@/api";
 import ConfirmModal from "../confirmModal";
-
 import breadcrumb from "../breadcrumb.vue";
+import dayjs from "dayjs";
 
 const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
 });
 
-const tableOneData = ref([
-  {
-    id: 1,
-    name: "尿酸",
-    targetValue: 114,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 2,
-    name: "肌酐",
-    targetValue: 224,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 3,
-    name: "苯丙氨酸",
-    targetValue: 334,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 4,
-    name: "肌酐",
-    targetValue: 224,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 5,
-    name: "苯丙氨酸",
-    targetValue: 334,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-]);
+const tableOneData = ref([]);
 
-const tableTwoData = ref([
-  {
-    id: 1,
-    name: "尿酸",
-    targetValue: 114,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 2,
-    name: "肌酐",
-    targetValue: 224,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 3,
-    name: "苯丙氨酸",
-    targetValue: 334,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 4,
-    name: "苯丙氨酸",
-    targetValue: 334,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-  {
-    id: 5,
-    name: "苯丙氨酸",
-    targetValue: 334,
-    actualValue: 5.55,
-    qualityState: "是",
-    time: "2024/05/16 14:45",
-  },
-]);
+const tableTwoData = ref([]);
+
+const itemType = ref({});
+
+onMounted(() => {
+  initList();
+});
+
+const initList = (status, page) => {
+  getItemMap({ type: "ms_quality_status" }).then((res) => {
+    const result = getAPIResponse(res);
+    if (result) {
+      itemType.value = result;
+      handleGetQCList();
+    }
+  });
+};
+
+const handleGetQCList = () => {
+  getQCList().then((res) => {
+    const result = getAPIResponse(res);
+    if (result) {
+      for (let i = 0; i < result.length; i++) {
+        tableOneData.value.push({
+          id: i,
+          name: result[i].itemName,
+          targetValue: result[i].targetValueL,
+          actualValue: result[i].actualValueL,
+          qualityState: itemType.value[result[i].qualityControlL],
+          time: result[i].operTimeL,
+        });
+        tableTwoData.value.push({
+          id: i,
+          name: result[i].itemName,
+          targetValue: result[i].targetValueH,
+          actualValue: result[i].actualValueH,
+          qualityState: itemType.value[result[i].qualityControlH],
+          time: result[i].operTimeH,
+        });
+      }
+    }
+  });
+};
+
+// 上传
+const handleChange = async (info) => {
+  const status = info.file.status;
+
+  if (status !== "uploading") {
+    console.log(info.file, info.fileList);
+  }
+  if (status === "done") {
+    message.success(`${info.file.name} file uploaded successfully.`);
+  } else if (status === "error") {
+    message.error(`${info.file.name} file upload failed.`);
+  }
+};
+
+const beforeUpload = (file, fileList) => {
+  // if (fileList.length !== 3) {
+  //   message.error("只能同时上传三个文件");
+  //   return false;
+  // }
+
+  const isTxt = ["text/plain"].includes(file.type);
+  if (!isTxt) {
+    message.error("只能上传Txt文件");
+    return false;
+  }
+
+  const isLt10KB = file.size < 5 * 1024 * 1024;
+  if (!isLt10KB) {
+    message.error("文件必须小于 5M!");
+    return false;
+  }
+};
+
+const handleUpload = (file, item) => {
+  console.log(file);
+  const reader = new FileReader()
+  reader.readAsText(file.file)
+  reader.onloadend = (e) => {
+    console.log(reader.result);
+  }
+};
 
 // 跳转
 const jumpTo = () => {

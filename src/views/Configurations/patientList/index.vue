@@ -96,7 +96,7 @@
 
         <div class="tableBox">
           <a-table
-            :data-source="userList"
+            :data-source="patientList"
             :columns="columns"
             :row-key="(record) => record.id"
             :pagination="pagination"
@@ -110,7 +110,9 @@
                 {{ index + 1 }}
               </template>
               <template v-if="column.key === 'operation'">
-                <span class="icon" @click="jumpTo('detail')">查看检测信息</span>
+                <span class="icon" @click="jumpTo('detail', record)"
+                  >查看检测信息</span
+                >
                 <span class="icon" @click="jumpTo('report')">查看报告</span>
                 <span class="icon">删除</span>
                 <!-- <span class="icon" @click="editItem(record)"
@@ -129,8 +131,8 @@
         :departmentList="departmentList"
         @initList="initList"
       />
-      <ConfirmModal ref="confirmModal" @initList="initList"></ConfirmModal>
-      <ImportModal ref="importModal" @initList="initList"></ImportModal>
+      <!-- <ConfirmModal ref="confirmModal" @initList="initList"></ConfirmModal>
+      <ImportModal ref="importModal" @initList="initList"></ImportModal> -->
     </div>
   </div>
 </template>
@@ -150,48 +152,65 @@ import {
   nextTick,
 } from "vue";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
-import { getUserList, getDeptTree } from "@/api";
 import UserModal from "./userModal";
 import ConfirmModal from "../confirmModal";
-
 import breadcrumb from "../breadcrumb.vue";
+
+import { getPatientList } from "@/api";
 
 const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
 });
 
-let userList = ref([]);
+let patientList = ref([]);
 
 const columns = [
   {
     title: "序号",
-    dataIndex: "orderNum",
-    key: "orderNum",
+    dataIndex: "createBy",
+    key: "createBy",
     align: "center",
-    // width: 300
   },
   {
     title: "姓名",
-    dataIndex: "userName",
-    key: "userName",
+    dataIndex: "name",
+    key: "name",
     align: "center",
   },
   {
-    title: "所属部门",
-    dataIndex: "deptId",
-    key: "deptId",
+    title: "性别",
+    dataIndex: "sex",
+    key: "sex",
     align: "center",
   },
   {
-    title: "用户名称",
-    dataIndex: "nickName",
-    key: "nickName",
+    title: "年龄",
+    dataIndex: "age",
+    key: "age",
     align: "center",
   },
   {
-    title: "职务",
-    dataIndex: "dutyCn",
-    key: "dutyCn",
+    title: "样本编号",
+    dataIndex: "sampleCode",
+    key: "sampleCode",
+    align: "center",
+  },
+  {
+    title: "检测日期",
+    dataIndex: "checkDate",
+    key: "checkDate",
+    align: "center",
+  },
+  {
+    title: "样本状态",
+    dataIndex: "sampleStatus",
+    key: "sampleStatus",
+    align: "center",
+  },
+  {
+    title: "备注",
+    dataIndex: "remark",
+    key: "remark",
     align: "center",
   },
   {
@@ -200,12 +219,6 @@ const columns = [
     key: "operation",
     align: "center",
   },
-  // {
-  //   title: "状态",
-  //   dataIndex: "status",
-  //   key: "status",
-  //   align: "center",
-  // },
 ];
 
 const initialState = {
@@ -245,19 +258,19 @@ const initList = (status, page) => {
       ? newForm.deptId[newForm.deptId.length - 1]
       : "";
   }
-  getDeptTree(null).then((res) => {
-    const result = getAPIResponse(res);
-    if (result) {
-      console.log(result);
-      departmentList.value = result;
-    }
-  });
+  // getDeptTree(null).then((res) => {
+  //   const result = getAPIResponse(res);
+  //   if (result) {
+  //     console.log(result);
+  //     departmentList.value = result;
+  //   }
+  // });
 
-  getUserList(newForm).then((res) => {
+  getPatientList(newForm).then((res) => {
     const result = getAPIResponse(res);
     if (result) {
       console.log(result);
-      userList.value = result.list;
+      patientList.value = result.list;
       pagination.total = result.total;
     }
   });
@@ -266,14 +279,20 @@ const initList = (status, page) => {
 const search = () => {
   initList("search", 1);
 };
+
 const addUser = (id) => {
   userModal.value.openModal(true, id);
 };
 
 // 跳转
-const jumpTo = (target) => {
+const jumpTo = (target, record) => {
   if (target === "detail") {
-    router.push({ name: "patientDetail" });
+    router.push({
+      name: "patientDetail",
+      params: {
+        id: record.id,
+      },
+    });
   } else if (target === "report") {
     router.push({ name: "reportList" });
   }

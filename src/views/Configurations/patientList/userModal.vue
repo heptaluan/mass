@@ -20,12 +20,12 @@
           <div class="itemBox">
             <a-form-item
               required
-              name="userName"
+              name="name"
               label="姓名"
               :rules="[{ required: true, message: '请输入姓名' }]"
             >
               <a-input
-                v-model:value="formData.userName"
+                v-model:value="formData.name"
                 placeholder="请输入姓名"
                 type="text"
               />
@@ -34,12 +34,12 @@
 
           <div class="itemBox">
             <a-form-item
-              name="deptId"
+              name="sampleCode"
               label="样本编号"
               :rules="[{ required: true, message: '请输入样本编号' }]"
             >
               <a-input
-                v-model:value="formData.deptId"
+                v-model:value="formData.sampleCode"
                 placeholder="请输入样本编号"
                 type="text"
               />
@@ -64,18 +64,21 @@
               :rules="[{ required: true, message: '请选择性别' }]"
             >
               <a-select v-model:value="formData.sex" placeholder="请选择性别">
-                <a-select-option value="0">男</a-select-option>
-                <a-select-option value="1">女</a-select-option>
+                <a-select-option value="1">男</a-select-option>
+                <a-select-option value="0">女</a-select-option>
               </a-select>
             </a-form-item>
           </div>
 
           <div class="itemBox">
-            <a-form-item
-              name="date"
-              label="检测日期"
-            >
-              <a-date-picker style="width: 100%" />
+            <a-form-item name="checkDate" label="检测日期">
+              <a-date-picker
+                :locale="locale"
+                v-model:value="formData.checkDate"
+                placeholder="请选择检测日期"
+                valueFormat="YYYY-MM-DD HH:mm:ss"
+                style="width: 100%"
+              />
             </a-form-item>
           </div>
 
@@ -110,19 +113,14 @@ import {
   reactive,
   onBeforeMount,
 } from "vue";
-import {
-  addNodule,
-  getSelectionsByType,
-  getRoleList,
-  saveUser,
-  getParentIds,
-  findUserById,
-} from "@/api";
+import { addPatientList } from "@/api";
 import { QuestionCircleOutlined } from "@ant-design/icons-vue";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
 import { message } from "ant-design-vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useUserStore } from "@/store/modules/user";
+import locale from "ant-design-vue/es/date-picker/locale/zh_CN";
+import dayjs from "dayjs";
 
 const userStore = useUserStore();
 const userModal = ref(false);
@@ -130,58 +128,29 @@ const confirmLoading = ref(false);
 let noduleData;
 const emit = defineEmits(["initList"]);
 const props = defineProps(["departmentList"]);
-const rawForm = {
-  userName: "",
-  nickName: "",
-  deptId: "",
-  duty: "",
-  roleIdList: [],
-};
-const formData = reactive({ ...rawForm });
-const fieldNames = {
-  label: "deptName",
-  value: "id",
-};
-const dutyFieldNames = {
-  label: "dictLabel",
-  value: "dictValue",
-};
-const roleFieldNames = {
-  label: "roleName",
-  value: "id",
-};
+
+const formData = reactive({});
+
 let titleTxt = ref("");
 let dutyOptions = ref([]);
 let roleOptions = ref([]);
 const ruleForm = ref();
 let selectedUser = ref(null);
 
-onBeforeMount(() => {
-  getRoleList().then((res) => {
-    const result = getAPIResponse(res);
-    console.log(result);
-    roleOptions.value = result;
-  });
-  getSelectionsByType().then((res) => {
-    const result = getAPIResponse(res);
-    dutyOptions.value = result.sys_doctor_duty;
-  });
-});
-
 const openModal = async (status, selectUser) => {
   userModal.value = status;
   if (status) {
     if (selectUser) {
-      selectedUser.value = selectUser;
-      const rawResult = await getParentIds({ id: selectUser.deptId });
-      const department = getAPIResponse(rawResult);
-      formData.id = selectUser.id;
-      formData.userName = selectUser.userName;
-      formData.nickName = selectUser.nickName;
-      formData.deptId = department;
-      formData.duty = selectUser.duty;
-      formData.roleIdList = selectUser.roleIdList;
-      titleTxt.value = "修改用户信息";
+      // selectedUser.value = selectUser;
+      // const rawResult = await getParentIds({ id: selectUser.deptId });
+      // const department = getAPIResponse(rawResult);
+      // formData.id = selectUser.id;
+      // formData.userName = selectUser.userName;
+      // formData.nickName = selectUser.nickName;
+      // formData.deptId = department;
+      // formData.duty = selectUser.duty;
+      // formData.roleIdList = selectUser.roleIdList;
+      // titleTxt.value = "修改用户信息";
     } else {
       titleTxt.value = "新增检测信息";
     }
@@ -192,27 +161,15 @@ const openModal = async (status, selectUser) => {
 
 const submit = async (values) => {
   const newForm = Object.assign({}, formData);
-  newForm.deptId = newForm.deptId
-    ? newForm.deptId[newForm.deptId.length - 1]
-    : "";
+  newForm.checkDate = dayjs(newForm.checkDate).format("YYYY-MM-DD HH:mm:ss");
 
-  const res = await saveUser(newForm);
+  const res = await addPatientList(newForm);
   const result = getAPIResponse(res);
   if (result) {
-    const currentUser = useCookies().get("info");
-    if (newForm.id === currentUser.id) {
-      const resInner = await findUserById({ id: newForm.id });
-      const resultInner = getAPIResponse(resInner);
-
-      userStore.updateInfo(resultInner);
-
-      console.log(userStore.getUserInfo);
-    }
-
     emit("initList");
     resetForm();
     openModal(false);
-    message.success("创建成功");
+    message.success("新增成功");
   }
 };
 
@@ -222,21 +179,6 @@ const resetForm = () => {
 
 const submitFailed = (e) => {
   console.log(e, formData);
-};
-
-const userNameCheck = async (rule, val) => {
-  const regRule = /^[a-zA-Z0-9]+$/;
-  if (val && (!regRule.test(val) || !(val.length >= 3 && val.length <= 20))) {
-    await callbackDetect(false, rule.message);
-  }
-  await callbackDetect(true);
-};
-const nickNameCheck = async (rule, val) => {
-  const regRule = /^[\u4E00-\u9FA5a-zA-Z]+$/;
-  if (val && !(regRule.test(val) && val.length >= 1 && val.length <= 20)) {
-    await callbackDetect(false, rule.message);
-  }
-  await callbackDetect(true);
 };
 
 const callbackDetect = (isCorrect, msg) => {

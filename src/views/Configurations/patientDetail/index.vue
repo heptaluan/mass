@@ -12,10 +12,9 @@
               <a-input
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="form.name"
+                @change="changeClear(form.name)"
                 placeholder="请输入姓名"
-                allow-clear
               />
             </div>
 
@@ -24,19 +23,20 @@
               <a-input
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="form.sampleCode"
+                @change="changeClear(form.name)"
                 placeholder="请输入样本编号"
-                allow-clear
               />
             </div>
 
             <div class="searchBox">
               <label>检测日期：</label>
               <a-date-picker
+                :locale="locale"
+                valueFormat="YYYY-MM-DD HH:mm:ss"
+                v-model:value="form.checkDate"
                 style="width: 150px"
                 placeholder="请选择检测日期"
-                allow-clear
               />
             </div>
 
@@ -45,8 +45,8 @@
               <a-input-number
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="form.age"
+                @change="changeClear(form.name)"
                 placeholder="请输入年龄"
                 allow-clear
               />
@@ -56,11 +56,11 @@
               <label>性别：</label>
               <a-select
                 style="width: 150px"
-                v-model:value="searchForm.name"
+                v-model:value="form.sex"
                 placeholder="请选择性别"
               >
-                <a-select-option value="0">男</a-select-option>
-                <a-select-option value="1">女</a-select-option>
+                <a-select-option value="1">男</a-select-option>
+                <a-select-option value="0">女</a-select-option>
               </a-select>
             </div>
 
@@ -68,11 +68,11 @@
               <label>样本状态：</label>
               <a-select
                 style="width: 150px"
-                v-model:value="searchForm.name"
+                v-model:value="form.sampleStatus"
                 placeholder="请选择样本状态"
               >
-                <a-select-option value="0">待检测</a-select-option>
-                <a-select-option value="1">已检测</a-select-option>
+                <a-select-option value="01">待检测</a-select-option>
+                <a-select-option value="02">已检测</a-select-option>
               </a-select>
             </div>
 
@@ -81,8 +81,8 @@
               <a-input
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="form.remark"
+                @change="changeClear(form.name)"
                 placeholder="请输入备注"
                 allow-clear
               />
@@ -150,7 +150,11 @@
             <a-button style="margin-right: 10px" type="primary">
               保存
             </a-button>
-            <a-button style="margin-right: 10px" type="primary">
+            <a-button
+              @click="(e) => showUploadModal(null)"
+              style="margin-right: 10px"
+              type="primary"
+            >
               浓度计算
             </a-button>
             <a-button style="margin-right: 10px" type="primary">
@@ -174,8 +178,11 @@
         </div>
       </div>
 
-      <ConfirmModal ref="confirmModal" @initList="initList"></ConfirmModal>
-      <ImportModal ref="importModal" @initList="initList"></ImportModal>
+      <UploadModal
+        ref="userModal"
+        :departmentList="departmentList"
+        @initList="initList"
+      />
     </div>
   </div>
 </template>
@@ -185,6 +192,7 @@ import router from "@/router";
 import { message } from "ant-design-vue";
 import { createFromIconfontCN } from "@ant-design/icons-vue";
 import IconFontUrl from "../../../assets/iconFont";
+import locale from "ant-design-vue/es/date-picker/locale/zh_CN";
 import {
   defineExpose,
   ref,
@@ -195,10 +203,17 @@ import {
   nextTick,
 } from "vue";
 import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
-import { getUserList, getDeptTree } from "@/api";
-import ConfirmModal from "../confirmModal";
-
+import UploadModal from "./uploadModal";
 import breadcrumb from "../breadcrumb.vue";
+
+import { getPatientDetail } from "@/api";
+
+let userModal = ref(null);
+let form = ref({});
+
+const showUploadModal = (id) => {
+  userModal.value.openModal(true, id);
+};
 
 const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
@@ -287,7 +302,6 @@ const initialState = {
 
 let confirmModal = ref(null);
 let importModal = ref(null);
-const searchForm = reactive({ ...initialState });
 const departmentList = ref([]);
 const fieldNames = {
   label: "deptName",
@@ -299,37 +313,11 @@ onMounted(() => {
 });
 
 const initList = (status, page) => {
-  if (page) {
-    pagination.current = 1;
-  }
-  const searchInfo = {
-    name: "",
-    deptId: "",
-    page: pagination.current,
-    size: pagination.size,
-  };
-  let newForm = searchInfo;
-  if (status === "search") {
-    newForm = Object.assign(searchInfo, searchForm);
-
-    newForm.deptId = newForm.deptId
-      ? newForm.deptId[newForm.deptId.length - 1]
-      : "";
-  }
-  getDeptTree(null).then((res) => {
+  getPatientDetail({ id: router.currentRoute.value.params.id }).then((res) => {
     const result = getAPIResponse(res);
     if (result) {
-      console.log(result);
-      departmentList.value = result;
-    }
-  });
-
-  getUserList(newForm).then((res) => {
-    const result = getAPIResponse(res);
-    if (result) {
-      console.log(result);
-      userList.value = result.list;
-      pagination.total = result.total;
+      form.value = Object.assign({}, result);
+      console.log(result.patientQualityVOList);
     }
   });
 };

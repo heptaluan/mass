@@ -1,6 +1,6 @@
 const path = require('path')
 // local
-const API = 'http://192.168.1.65:9901/';
+const API = 'http://192.168.1.10:9901/';
 
 module.exports = {
     // publicPath: './', // 署应用包时的基本 URL。 vue-router hash 模式使用
