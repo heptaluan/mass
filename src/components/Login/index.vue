@@ -4,7 +4,7 @@
       <img src="../../assets/logo.png" />
     </div>
 
-    <div class="title">肺结节CT影像辅助诊断软件</div>
+    <div class="title">质谱数据分析软件</div>
 
     <a-form :model="formData" @finish="submit" @finishFailed="submitFailed">
       <a-form-item
@@ -87,14 +87,14 @@ const submit = async (values: any) => {
 
     if (res && res["token"]) {
       router.push({ name: "patientList" });
-      if (res["certificationStatus"] !== "02") {
-        message.warning({
-          content: () => "平台未授权，部分功能将禁用",
-          style: {
-            marginTop: "40vh",
-          },
-        });
-      }
+      // if (res["certificationStatus"] !== "02") {
+      //   message.warning({
+      //     content: () => "平台未授权，部分功能将禁用",
+      //     style: {
+      //       marginTop: "40vh",
+      //     },
+      //   });
+      // }
     } else {
       message.error(res.toString());
     }

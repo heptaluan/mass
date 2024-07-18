@@ -31,6 +31,11 @@ export function addPatientList(params: any) {
   return normalAPIFormat(`/ms-patient/createPatient`, params, "POST");
 }
 
+// 修改患者信息
+export function updatePatient(params: any) {
+  return normalAPIFormat(`/ms-patient/updatePatient`, params, "POST");
+}
+
 // 查询检测信息详情
 export function getPatientDetail(params: any) {
   return normalAPIFormat(
@@ -61,9 +66,24 @@ export function uploadAppendixList(params: any) {
   );
 }
 
-// 质控列表
+// 查询质控列表
 export function getQCList(params: any) {
   return normalAPIFormat(`/ms-quality-control/list`, params, "POST");
+}
+
+// 提交质控数据
+export function updateQCList(params: any) {
+  return normalAPIFormat(`/ms-quality-control/update`, params, "POST");
+}
+
+// 浓度计算
+export function concentrationCalculation(params: any) {
+  return normalAPIFormat(`/ms-patient/concentrationCalculation`, params, "POST");
+}
+
+// 评分计算
+export function scoresCalculation(params: any) {
+  return normalAPIFormat(`/ms-patient/scoresCalculation`, params, "POST");
 }
 
 // 字典查询

@@ -3,7 +3,7 @@
     <div class="sideMenu">
       <div class="logo-box">
         <!-- <img src="../../assets/logo.png" /> -->
-        <span>肺结节CT影像辅助诊断软件</span>
+        <span>质谱数据分析软件</span>
       </div>
       <div class="page-title">
         <span>系统设置</span>

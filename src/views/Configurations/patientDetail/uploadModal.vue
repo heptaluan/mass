@@ -62,14 +62,14 @@
             type="primary"
             class="generalBtn"
             @click="openModal(false)"
-            >取消</a-button
+            >关闭</a-button
           >
           <a-button
             key="submit"
             type="primary"
             class="generalBtn"
-            html-type="submit"
-            >确认</a-button
+            @click="handleComputed()"
+            >计算</a-button
           >
         </div>
       </div>
@@ -96,36 +96,29 @@ import {
   queryAppendixList,
   removeAppendixList,
   uploadAppendixList,
+  concentrationCalculation
 } from "@/api";
 
 const userStore = useUserStore();
 const userModal = ref(false);
 const confirmLoading = ref(false);
 const emit = defineEmits(["initList"]);
-const props = defineProps(["departmentList"]);
 
 const uploading = ref(false);
 
-const fileList = ref([
-  // {
-  //   id: 1,
-  //   name: "1111",
-  //   size: 555,
-  //   state: 1,
-  // },
-  // {
-  //   id: 2,
-  //   name: "2222",
-  //   size: 555,
-  //   state: 0,
-  // },
-  // {
-  //   id: 3,
-  //   name: "3333333",
-  //   size: 555,
-  //   state: 1,
-  // },
-]);
+const fileList = ref([]);
+
+// 计算
+const handleComputed = () => {
+  concentrationCalculation({
+    id: router.currentRoute.value.params.id,
+  }).then((res) => {
+    const result = getAPIResponse(res);
+    if (result) {
+      message.success(result)
+    }
+  });
+}
 
 const openModal = async (status, selectUser) => {
   userModal.value = status;

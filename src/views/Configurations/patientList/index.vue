@@ -22,8 +22,8 @@
               <a-input
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="searchForm.sampleCode"
+                @change="changeClear(searchForm.sampleCode)"
                 placeholder="请输入样本编号"
                 allow-clear
               />
@@ -32,6 +32,7 @@
             <div class="searchBox">
               <label>检测日期：</label>
               <a-date-picker
+                v-model:value="searchForm.checkDate"
                 style="width: 150px"
                 placeholder="请选择检测日期"
                 allow-clear
@@ -43,8 +44,8 @@
               <a-input-number
                 style="width: 150px"
                 ref="searchInput"
-                v-model:value="searchForm.name"
-                @change="changeClear(searchForm.name)"
+                v-model:value="searchForm.age"
+                @change="changeClear(searchForm.age)"
                 placeholder="请输入年龄"
                 allow-clear
               />
@@ -54,7 +55,7 @@
               <label>性别：</label>
               <a-select
                 style="width: 150px"
-                v-model:value="searchForm.name"
+                v-model:value="searchForm.sex"
                 placeholder="请选择性别"
               >
                 <a-select-option value="0">男</a-select-option>
@@ -66,19 +67,32 @@
               <label>样本状态：</label>
               <a-select
                 style="width: 150px"
-                v-model:value="searchForm.name"
+                v-model:value="searchForm.sampleStatus"
                 placeholder="请选择样本状态"
               >
-                <a-select-option value="0">待检测</a-select-option>
-                <a-select-option value="1">已检测</a-select-option>
+                <template v-for="item in itemType" :key="item.id">
+                  <a-select-option :value="item.value">{{
+                    item.name
+                  }}</a-select-option>
+                </template>
               </a-select>
             </div>
           </div>
           <div class="btnArea">
-            <a-button block type="info" class="generalBtn" @click="search">
+            <a-button
+              block
+              type="info"
+              class="generalBtn"
+              @click="handleSearch"
+            >
               查询
             </a-button>
-            <a-button block type="info" class="generalBtn" @click="search">
+            <a-button
+              block
+              type="info"
+              class="generalBtn"
+              @click="handleInitSearch"
+            >
               重置
             </a-button>
           </div>
@@ -113,14 +127,11 @@
                 <span class="icon" @click="jumpTo('detail', record)"
                   >查看检测信息</span
                 >
-                <span class="icon" @click="jumpTo('report')">查看报告</span>
+                <span class="icon" @click="jumpTo('report', record)">查看报告</span>
                 <span class="icon">删除</span>
-                <!-- <span class="icon" @click="editItem(record)"
-                  ><icon-font type="icon-bianji"
-                /></span>
-                <span class="icon" @click="resetPassword(record)"
-                  ><icon-font type="icon-refresh"
-                /></span> -->
+              </template>
+              <template v-if="column.key === 'sampleStatus'">
+                <span>{{ itemList[record.sampleStatus] }}</span>
               </template>
             </template>
           </a-table>
@@ -156,7 +167,7 @@ import UserModal from "./userModal";
 import ConfirmModal from "../confirmModal";
 import breadcrumb from "../breadcrumb.vue";
 
-import { getPatientList } from "@/api";
+import { getPatientList, getItemMap } from "@/api";
 
 const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
@@ -223,7 +234,11 @@ const columns = [
 
 const initialState = {
   name: "",
-  deptId: undefined,
+  sampleCode: undefined,
+  checkDate: undefined,
+  age: undefined,
+  sex: undefined,
+  sampleStatus: undefined,
 };
 
 let userModal = ref(null);
@@ -238,33 +253,54 @@ const fieldNames = {
 
 onMounted(() => {
   initList();
+  initItemList();
 });
+
+// 初始化样本状态
+const itemList = ref([]);
+const itemType = ref([]);
+
+const initItemList = (status, page) => {
+  getItemMap({ type: "ms_quality_status" }).then((res) => {
+    const result = getAPIResponse(res);
+    itemList.value = result;
+    if (result) {
+      for (const item in result) {
+        itemType.value.push({
+          id: item,
+          name: result[item],
+          value: item,
+        });
+      }
+    }
+  });
+};
 
 const initList = (status, page) => {
   if (page) {
     pagination.current = 1;
   }
   const searchInfo = {
-    name: "",
-    deptId: "",
     page: pagination.current,
     size: pagination.size,
   };
   let newForm = searchInfo;
   if (status === "search") {
     newForm = Object.assign(searchInfo, searchForm);
-
-    newForm.deptId = newForm.deptId
-      ? newForm.deptId[newForm.deptId.length - 1]
-      : "";
   }
-  // getDeptTree(null).then((res) => {
-  //   const result = getAPIResponse(res);
-  //   if (result) {
-  //     console.log(result);
-  //     departmentList.value = result;
-  //   }
-  // });
+
+  if (status === "init") {
+    newForm = {
+      page: 1,
+      size: 10,
+    };
+    searchForm.name = "";
+    searchForm.sampleCode = undefined;
+    searchForm.checkDate = undefined;
+    searchForm.age = undefined;
+    searchForm.sex = undefined;
+    searchForm.sampleStatus = undefined;
+  }
 
   getPatientList(newForm).then((res) => {
     const result = getAPIResponse(res);
@@ -276,8 +312,12 @@ const initList = (status, page) => {
   });
 };
 
-const search = () => {
+const handleSearch = () => {
   initList("search", 1);
+};
+
+const handleInitSearch = () => {
+  initList("init");
 };
 
 const addUser = (id) => {
@@ -294,7 +334,12 @@ const jumpTo = (target, record) => {
       },
     });
   } else if (target === "report") {
-    router.push({ name: "reportList" });
+    router.push({
+      name: "reportList",
+      params: {
+        id: record.id,
+      },
+    });
   }
 };
 

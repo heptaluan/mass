@@ -71,8 +71,11 @@
                 v-model:value="form.sampleStatus"
                 placeholder="请选择样本状态"
               >
-                <a-select-option value="01">待检测</a-select-option>
-                <a-select-option value="02">已检测</a-select-option>
+                <template v-for="item in itemType" :key="item.id">
+                  <a-select-option :value="item.value">{{
+                    item.name
+                  }}</a-select-option>
+                </template>
               </a-select>
             </div>
 
@@ -104,9 +107,10 @@
           <div>
             <div v-for="item in tableData" :key="item.id">
               <div className="table-list">
-                <div>{{ item.name }}</div>
+                <div>{{ item.itemName }}</div>
                 <div>
                   <a-input-number
+                    :value="item.analytes"
                     disabled
                     style="width: 140px"
                     placeholder="待测物质荷比"
@@ -114,6 +118,7 @@
                 </div>
                 <div>
                   <a-input-number
+                    :value="item.internalStandard"
                     disabled
                     style="width: 140px"
                     placeholder="内标质荷比"
@@ -121,13 +126,14 @@
                 </div>
                 <div>
                   <a-input-number
-                    :value="item.value"
+                    :value="item.qualityAccuracy"
                     style="width: 140px"
                     placeholder="待测物质荷比"
                   />
                 </div>
                 <div>
                   <a-input-number
+                    :value="item.internalConcentration"
                     disabled
                     style="width: 140px"
                     placeholder="浓度"
@@ -143,11 +149,11 @@
         <div className="table-result">
           <div className="score-box">
             <span>评分</span>
-            <span>87.42</span>
+            <span>{{ scores }}</span>
           </div>
 
           <div className="btn-group">
-            <a-button style="margin-right: 10px" type="primary">
+            <a-button style="margin-right: 10px" type="primary" @click="handleUpdatePatient">
               保存
             </a-button>
             <a-button
@@ -157,7 +163,7 @@
             >
               浓度计算
             </a-button>
-            <a-button style="margin-right: 10px" type="primary">
+            <a-button style="margin-right: 10px" type="primary" @click="handleScoresCalculation">
               评分计算
             </a-button>
             <a-button
@@ -178,11 +184,7 @@
         </div>
       </div>
 
-      <UploadModal
-        ref="userModal"
-        :departmentList="departmentList"
-        @initList="initList"
-      />
+      <UploadModal ref="userModal" @initList="initList" />
     </div>
   </div>
 </template>
@@ -206,7 +208,7 @@ import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
 import UploadModal from "./uploadModal";
 import breadcrumb from "../breadcrumb.vue";
 
-import { getPatientDetail } from "@/api";
+import { getPatientDetail, getItemMap, scoresCalculation, updatePatient } from "@/api";
 
 let userModal = ref(null);
 let form = ref({});
@@ -219,124 +221,87 @@ const IconFont = createFromIconfontCN({
   scriptUrl: IconFontUrl,
 });
 
-const tableData = ref([
-  {
-    id: 1,
-    name: "尿酸",
-    value: 2000,
-  },
-  {
-    id: 2,
-    name: "肌酐",
-    value: 2000,
-  },
-  {
-    id: 3,
-    name: "苯丙氨酸",
-    value: 2000,
-  },
-  {
-    id: 4,
-    name: "亮氨酸",
-    value: 2000,
-  },
-  {
-    id: 5,
-    name: "精氨酸",
-    value: 2000,
-  },
-]);
+const tableData = ref([]);
 
-let userList = ref([]);
-
-const columns = [
-  {
-    title: "序号",
-    dataIndex: "orderNum",
-    key: "orderNum",
-    align: "center",
-    // width: 300
-  },
-  {
-    title: "姓名",
-    dataIndex: "userName",
-    key: "userName",
-    align: "center",
-  },
-  {
-    title: "所属部门",
-    dataIndex: "deptId",
-    key: "deptId",
-    align: "center",
-  },
-  {
-    title: "用户名称",
-    dataIndex: "nickName",
-    key: "nickName",
-    align: "center",
-  },
-  {
-    title: "职务",
-    dataIndex: "dutyCn",
-    key: "dutyCn",
-    align: "center",
-  },
-  {
-    title: "操作",
-    dataIndex: "operation",
-    key: "operation",
-    align: "center",
-  },
-  // {
-  //   title: "状态",
-  //   dataIndex: "status",
-  //   key: "status",
-  //   align: "center",
-  // },
-];
-
-const initialState = {
-  name: "",
-  deptId: undefined,
-};
-
-let confirmModal = ref(null);
-let importModal = ref(null);
-const departmentList = ref([]);
-const fieldNames = {
-  label: "deptName",
-  value: "id",
-};
+// 评分
+const scores = ref()
 
 onMounted(() => {
   initList();
+  initItemList()
 });
+
+// 初始化样本状态
+const itemList = ref([]);
+const itemType = ref([]);
+
+const initItemList = (status, page) => {
+  getItemMap({ type: "ms_quality_status" }).then((res) => {
+    const result = getAPIResponse(res);
+    itemList.value = result;
+    scores.value = result.scores
+    if (result) {
+      for (const item in result) {
+        itemType.value.push({
+          id: item,
+          name: result[item],
+          value: item,
+        });
+      }
+    }
+  });
+};
 
 const initList = (status, page) => {
   getPatientDetail({ id: router.currentRoute.value.params.id }).then((res) => {
     const result = getAPIResponse(res);
     if (result) {
       form.value = Object.assign({}, result);
-      console.log(result.patientQualityVOList);
+      formatTable(result.patientQualityVOList);
     }
   });
+};
+
+const formatTable = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    tableData.value.push({
+      id: i,
+      itemName: data[i].itemName,
+      analytes: data[i].analytes,
+      internalStandard: data[i].internalStandard,
+      qualityAccuracy: data[i].qualityAccuracy,
+      internalConcentration: data[i].internalConcentration,
+    });
+  }
 };
 
 const search = () => {
   initList("search", 1);
 };
 
-const resetPassword = (record) => {
-  console.log(record);
-  confirmModal.value.openModal(true, record, "passwordReset");
-};
-
 const changeClear = (value) => {
-  console.log(value);
   if (!value || value === "") {
     initList();
   }
 };
+
+// 修改患者信息
+const handleUpdatePatient = () => {
+
+  console.log(form.value);
+  // updatePatient({ id: router.currentRoute.value.params.id, }).then((res) => {
+  //   const result = getAPIResponse(res);
+  //   console.log(result);
+  // });
+}
+
+// 评分计算
+const handleScoresCalculation = () => {
+  scoresCalculation({ id: router.currentRoute.value.params.id, }).then((res) => {
+    const result = getAPIResponse(res);
+    console.log(result);
+  });
+}
 
 const handleChangePage = (page, size) => {
   pagination.current = page;
@@ -514,6 +479,15 @@ const jumpTo = (target) => {
       align-items: center;
       justify-content: center;
       user-select: none;
+    }
+  }
+
+  // 禁用状态
+  .table-content {
+    :deep(.ant-input-number-input[disabled]) {
+      color: #999 !important;
+      background-color: #4d4d4d !important;
+      border-color: #64686d !important;
     }
   }
 }
