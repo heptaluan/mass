@@ -9,32 +9,32 @@
 
             <div className="report-code">
               <div>报告编号：</div>
-              <div>{{userInfo.sampleCode}}</div>
+              <div>{{ userInfo.sampleCode }}</div>
             </div>
 
             <div className="user-info">
               <div className="list">
                 <div>患者姓名</div>
-                <div>{{userInfo.name}}</div>
+                <div>{{ userInfo.name }}</div>
               </div>
               <div className="list">
                 <div>性别</div>
-                <div>{{userInfo.sex === 0 ? '男' : '女'}}</div>
+                <div>{{ userInfo.sex === 0 ? "男" : "女" }}</div>
               </div>
               <div className="list">
                 <div>年龄</div>
-                <div>{{userInfo.age}}</div>
+                <div>{{ userInfo.age }}</div>
               </div>
             </div>
 
             <div className="patient-code">
               <div className="list">
                 <div>患者编号</div>
-                <div>{{userInfo.sampleCode}}</div>
+                <div>{{ userInfo.sampleCode }}</div>
               </div>
               <div className="list">
                 <div>检测日期</div>
-                <div style="width:250px">{{userInfo.checkDate}}</div>
+                <div style="width: 250px">{{ userInfo.checkDate }}</div>
               </div>
             </div>
 
@@ -53,7 +53,7 @@
                     <div>{{ item.itemName }}</div>
                     <div>{{ item.actualValue }}</div>
                     <div>{{ item.range }}</div>
-                    <div>{{  }}</div>
+                    <div>{{}}</div>
                   </div>
                 </div>
               </div>
@@ -62,14 +62,14 @@
             <div className="backup">
               <div className="list">
                 <div>备注</div>
-                <div>{{userInfo.remark}}</div>
+                <div>{{ userInfo.remark }}</div>
               </div>
             </div>
 
             <div className="score">
               <div className="list">
                 <div>评分</div>
-                <div>{{userInfo.scores}}</div>
+                <div>{{ userInfo.scores }}</div>
               </div>
             </div>
 
@@ -121,7 +121,7 @@ const IconFont = createFromIconfontCN({
 });
 
 const testingData = ref([]);
-const userInfo = ref({})
+const userInfo = ref({});
 
 onMounted(() => {
   initList();
@@ -132,7 +132,8 @@ const initList = (status, page) => {
     const result = getAPIResponse(res);
     if (result) {
       formatTable(result.patientQualityVOList);
-      userInfo.value = result
+      userInfo.value = result;
+      userInfo.value.checkDate = userInfo.value.checkDate.substring(0, 10);
     }
   });
 };
@@ -143,7 +144,7 @@ const formatTable = (data) => {
       id: i,
       itemName: data[i].itemName,
       actualValue: `${data[i].actualValue}${data[i].unit}`,
-      range: `${data[i].targetValueL}-${data[i].targetValueH}${data[i].unit}`
+      range: `${data[i].targetValueL}-${data[i].targetValueH}${data[i].unit}`,
     });
   }
 };
@@ -255,10 +256,10 @@ const jumpTo = () => {
 
       .report-box {
         width: 850px;
-        height: 100%;
+        height: 1208px;
         border: 1px solid rgba(51, 51, 51, 0.3);
         position: relative;
-        padding: 50px 30px 20px;
+        padding: 30px;
 
         // 标题
         .report-title {
@@ -412,8 +413,8 @@ const jumpTo = () => {
               font-size: 14px;
               text-align: center;
               width: 120px;
-              height: 40px;
-              line-height: 40px;
+              height: 45px;
+              line-height: 45px;
             }
           }
         }
@@ -455,6 +456,7 @@ const jumpTo = () => {
             div:last-child {
               font-size: 14px;
               padding: 15px;
+              text-indent: 10px;
               width: 664px;
               text-align: left;
               line-height: 20px;
@@ -501,6 +503,7 @@ const jumpTo = () => {
               font-size: 20px;
               font-weight: bold;
               padding: 15px;
+              text-indent: 10px;
               width: 664px;
               text-align: left;
               line-height: 20px;
@@ -513,8 +516,8 @@ const jumpTo = () => {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          margin-top: 80px;
-          margin-bottom: 40px;
+          margin-top: 100px;
+          margin-bottom: 42px;
 
           .list {
             display: flex;

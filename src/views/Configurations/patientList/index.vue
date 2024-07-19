@@ -13,7 +13,6 @@
                 v-model:value="searchForm.name"
                 @change="changeClear(searchForm.name)"
                 placeholder="请输入姓名"
-                allow-clear
               />
             </div>
 
@@ -25,17 +24,16 @@
                 v-model:value="searchForm.sampleCode"
                 @change="changeClear(searchForm.sampleCode)"
                 placeholder="请输入样本编号"
-                allow-clear
               />
             </div>
 
             <div class="searchBox">
               <label>检测日期：</label>
               <a-date-picker
+                :locale="locale"
                 v-model:value="searchForm.checkDate"
                 style="width: 150px"
                 placeholder="请选择检测日期"
-                allow-clear
               />
             </div>
 
@@ -47,7 +45,6 @@
                 v-model:value="searchForm.age"
                 @change="changeClear(searchForm.age)"
                 placeholder="请输入年龄"
-                allow-clear
               />
             </div>
 
@@ -117,8 +114,8 @@
             bordered
           >
             <template #bodyCell="{ column, record, index }">
-              <template v-if="column.key === 'deptId'">
-                {{ record.deptName }}
+              <template v-if="column.key === 'checkDate'">
+                {{ record.checkDate.substring(0, 10) }}
               </template>
               <template v-if="column.key === 'orderNum'">
                 {{ index + 1 }}
@@ -127,8 +124,17 @@
                 <span class="icon" @click="jumpTo('detail', record)"
                   >查看检测信息</span
                 >
-                <span class="icon" @click="jumpTo('report', record)">查看报告</span>
-                <span class="icon">删除</span>
+                <span class="icon" @click="jumpTo('report', record)"
+                  >查看报告</span
+                >
+                <a-popconfirm
+                  title="是否确认删除患者？"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="handleDelete"
+                >
+                  <span class="icon">删除</span>
+                </a-popconfirm>
               </template>
               <template v-if="column.key === 'sampleStatus'">
                 <span>{{ itemList[record.sampleStatus] }}</span>
@@ -150,6 +156,7 @@
 
 <script setup>
 import router from "@/router";
+import locale from "ant-design-vue/es/date-picker/locale/zh_CN";
 import { message } from "ant-design-vue";
 import { createFromIconfontCN } from "@ant-design/icons-vue";
 import IconFontUrl from "../../../assets/iconFont";
@@ -256,6 +263,11 @@ onMounted(() => {
   initItemList();
 });
 
+// 删除事件
+const handleDelete = () => {
+  console.log(1111111111111);
+};
+
 // 初始化样本状态
 const itemList = ref([]);
 const itemType = ref([]);
@@ -305,7 +317,6 @@ const initList = (status, page) => {
   getPatientList(newForm).then((res) => {
     const result = getAPIResponse(res);
     if (result) {
-      console.log(result);
       patientList.value = result.list;
       pagination.total = result.total;
     }

@@ -78,12 +78,23 @@ export function updateQCList(params: any) {
 
 // 浓度计算
 export function concentrationCalculation(params: any) {
-  return normalAPIFormat(`/ms-patient/concentrationCalculation`, params, "POST");
+  return normalAPIFormat(
+    `/ms-patient/concentrationCalculation`,
+    params,
+    "POST",
+    "application/x-www-form-urlencoded"
+  );
 }
+
 
 // 评分计算
 export function scoresCalculation(params: any) {
-  return normalAPIFormat(`/ms-patient/scoresCalculation`, params, "POST");
+  return normalAPIFormat(
+    `/ms-patient/scoresCalculation`,
+    params,
+    "POST",
+    "application/x-www-form-urlencoded"
+  );
 }
 
 // 字典查询

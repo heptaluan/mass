@@ -7,7 +7,10 @@
           <div className="left-box">
             <div className="sub-title">
               <span>低值质控</span>
-              <em>存在失控数据，请检查后重新上传</em>
+              <em v-if="tab1Tips"
+                ><span class="icon-box"><icon-font type="icon-jinggao" /></span
+                >存在失控数据，请检查后重新上传</em
+              >
             </div>
 
             <div className="table-content">
@@ -39,7 +42,9 @@
                       />
                       mmol/L
                     </div>
-                    <div>{{ item.qualityState }}</div>
+                    <div :class="{ error: item.qualityControl === '03' }">
+                      {{ item.qualityState }}
+                    </div>
                     <div className="time-box">{{ item.time }}</div>
                     <div className="upload-box">
                       <div class="upload-box">
@@ -48,7 +53,7 @@
                           name="upload"
                           id="upload"
                           accept=".txt"
-                          @change="(e) => handleUpload(e, item.id, 'L')"
+                          @change="(e) => handleUpload(e, item.id, 'l')"
                           multiple
                         />
                         <label or="upload">上传</label>
@@ -61,8 +66,13 @@
           </div>
 
           <div className="right-box">
-            <div className="sub-title">高值质控</div>
-
+            <div className="sub-title">
+              <span>高值质控</span>
+              <em v-if="tab2Tips"
+                ><span class="icon-box"><icon-font type="icon-jinggao" /></span
+                >存在失控数据，请检查后重新上传</em
+              >
+            </div>
             <div className="table-content">
               <div className="tible-title">
                 <div>检测项目</div>
@@ -73,7 +83,7 @@
                 <div>选择文件</div>
               </div>
               <div>
-                <div v-for="item in tableOneData" :key="item.id">
+                <div v-for="item in tableTwoData" :key="item.id">
                   <div className="table-list">
                     <div>{{ item.itemName }}</div>
                     <div class="targer-box">
@@ -92,7 +102,9 @@
                       />
                       mmol/L
                     </div>
-                    <div>{{ item.qualityState }}</div>
+                    <div :class="{ error: item.qualityControl === '03' }">
+                      {{ item.qualityState }}
+                    </div>
                     <div className="time-box">{{ item.time }}</div>
                     <div className="upload-box">
                       <div class="upload-box">
@@ -101,7 +113,7 @@
                           name="upload"
                           id="upload"
                           accept=".txt"
-                          @change="(e) => handleUpload(e, item.id, 'H')"
+                          @change="(e) => handleUpload(e, item.id, 'h')"
                           multiple
                         />
                         <label for="upload">上传</label>
@@ -177,6 +189,7 @@ const handleGetQCList = () => {
           targetValue: result[i].targetValueL,
           actualValue: result[i].actualValueL,
           qualityState: itemType.value[result[i].qualityControlL],
+          qualityControl: result[i].qualityControlL,
           time: result[i].operTimeL,
         });
         tableTwoData.value.push({
@@ -185,13 +198,35 @@ const handleGetQCList = () => {
           targetValue: result[i].targetValueH,
           actualValue: result[i].actualValueH,
           qualityState: itemType.value[result[i].qualityControlH],
+          qualityControl: result[i].qualityControlH,
           time: result[i].operTimeH,
         });
       }
+
+      checkQualityControlState(tableOneData.value, tableTwoData.value);
     }
   });
 };
 
+// 计算失控状态提示
+const tab1Tips = ref(false);
+const tab2Tips = ref(false);
+
+const checkQualityControlState = (data1, data2) => {
+  if (data1.some((item) => item.qualityControl !== "03")) {
+    tab1Tips.value = true;
+  } else {
+    tab1Tips.value = false;
+  }
+
+  if (data2.some((item) => item.qualityControl !== "03")) {
+    tab2Tips.value = true;
+  } else {
+    tab2Tips.value = false;
+  }
+};
+
+// 上传计算
 const ppm = 2000;
 
 const searchIntensity = (da, dataList) => {
@@ -273,18 +308,32 @@ const handleUpload = async (event, id, target) => {
   // 实测值
   let actualValue = internalConcentration * (da1Intensity / da2Intensity);
 
+  console.log(`待测物da1 ==> ${da1}`);
+  console.log(`待测物da2 ==> ${da2}`);
+
+  console.log(`相对强度1 ==> ${da1Intensity}`);
+  console.log(`相对强度2 ==> ${da2Intensity}`);
+
+  console.log(`内标浓度 ==> ${internalConcentration}`);
+
+  console.log(`当前实测值 ==> ${actualValue}`);
+
   // 当前靶值（L 低值，H 高值）
   let targetValue = "";
-  if (target === "L") {
+  if (target === "l") {
     targetValue = targetItem.targetValueL;
-  } else if (target === "H") {
+  } else if (target === "h") {
     targetValue = targetItem.targetValueH;
   }
+
+  console.log(`当前靶值 ==> ${targetValue}`);
 
   // 计算相对偏差
   // 计算实测值（真实）与靶值的相对偏差，判断相对偏差是否在±20%，如果相对偏差在±20%（含20%）以内，则不进行系数矫正，实测值（真实）=实测值；
   // 当相对偏差在±20~50%（不含50%）时需进行系数校准，系数与实测值均保留2位小数。
   const relativeDeviation = (targetValue - actualValue) / actualValue;
+
+  console.log(`相对偏差 ==> ${relativeDeviation}`);
 
   if (abs(relativeDeviation) <= 0.2) {
     // 状态-否（实测值不作处理）
@@ -311,6 +360,11 @@ const handleUpload = async (event, id, target) => {
     // 系数不传
     coefficient = 0;
   }
+
+  console.log(`根据相对偏差计算后的状态 ==> ${status.value} ==> ${itemType.value[status.value]}`);
+  console.log(`根据相对偏差计算后的系数 ==> ${coefficient}`);
+  console.log(`根据相对偏差计算后的实测值 ==> ${actualValue}`);
+  console.log(`==============================================`);
 
   // 提交数据
   const params = {
@@ -348,6 +402,12 @@ const jumpTo = () => {
     position: relative;
     z-index: 2;
 
+    :deep(.ant-input-number-input) {
+      color: #ccc !important;
+      background-color: #4d4d4d !important;
+      border-color: #64686d !important;
+    }
+
     .quality-contetn {
       width: 100%;
       display: flex;
@@ -382,11 +442,19 @@ const jumpTo = () => {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 15px;
+        display: flex;
 
         em {
           font-size: 12px;
           color: rgb(255, 153, 0);
           margin-left: 15px;
+          display: flex;
+          align-items: center;
+
+          .icon-box {
+            font-size: 16px;
+            margin-right: 5px;
+          }
         }
       }
 
@@ -414,6 +482,10 @@ const jumpTo = () => {
           justify-content: space-between;
           height: 55px;
           border-bottom: 1px solid rgb(235, 238, 245);
+
+          .error {
+            color: rgb(255, 153, 0);
+          }
 
           &:nth-child(even) {
             background-color: rgb(250, 250, 250);

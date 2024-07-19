@@ -48,7 +48,6 @@
                 v-model:value="form.age"
                 @change="changeClear(form.name)"
                 placeholder="请输入年龄"
-                allow-clear
               />
             </div>
 
@@ -87,7 +86,6 @@
                 v-model:value="form.remark"
                 @change="changeClear(form.name)"
                 placeholder="请输入备注"
-                allow-clear
               />
             </div>
           </div>
@@ -105,7 +103,7 @@
             <div>浓度</div>
           </div>
           <div>
-            <div v-for="item in tableData" :key="item.id">
+            <div v-for="item in form.patientQualityVOList" :key="item.id">
               <div className="table-list">
                 <div>{{ item.itemName }}</div>
                 <div>
@@ -129,6 +127,7 @@
                     :value="item.qualityAccuracy"
                     style="width: 140px"
                     placeholder="待测物质荷比"
+                    @change="(e) => handleChangePPM(e, item.id)"
                   />
                 </div>
                 <div>
@@ -149,11 +148,15 @@
         <div className="table-result">
           <div className="score-box">
             <span>评分</span>
-            <span>{{ scores }}</span>
+            <span>{{ form.scores }}</span>
           </div>
 
           <div className="btn-group">
-            <a-button style="margin-right: 10px" type="primary" @click="handleUpdatePatient">
+            <a-button
+              style="margin-right: 10px"
+              type="primary"
+              @click="handleUpdatePatient"
+            >
               保存
             </a-button>
             <a-button
@@ -163,7 +166,11 @@
             >
               浓度计算
             </a-button>
-            <a-button style="margin-right: 10px" type="primary" @click="handleScoresCalculation">
+            <a-button
+              style="margin-right: 10px"
+              type="primary"
+              @click="handleScoresCalculation"
+            >
               评分计算
             </a-button>
             <a-button
@@ -208,7 +215,12 @@ import { getAPIResponse } from "@/utils/apiTools/useAxiosApi";
 import UploadModal from "./uploadModal";
 import breadcrumb from "../breadcrumb.vue";
 
-import { getPatientDetail, getItemMap, scoresCalculation, updatePatient } from "@/api";
+import {
+  getPatientDetail,
+  getItemMap,
+  scoresCalculation,
+  updatePatient,
+} from "@/api";
 
 let userModal = ref(null);
 let form = ref({});
@@ -223,12 +235,9 @@ const IconFont = createFromIconfontCN({
 
 const tableData = ref([]);
 
-// 评分
-const scores = ref()
-
 onMounted(() => {
   initList();
-  initItemList()
+  initItemList();
 });
 
 // 初始化样本状态
@@ -239,7 +248,6 @@ const initItemList = (status, page) => {
   getItemMap({ type: "ms_quality_status" }).then((res) => {
     const result = getAPIResponse(res);
     itemList.value = result;
-    scores.value = result.scores
     if (result) {
       for (const item in result) {
         itemType.value.push({
@@ -257,22 +265,8 @@ const initList = (status, page) => {
     const result = getAPIResponse(res);
     if (result) {
       form.value = Object.assign({}, result);
-      formatTable(result.patientQualityVOList);
     }
   });
-};
-
-const formatTable = (data) => {
-  for (let i = 0; i < data.length; i++) {
-    tableData.value.push({
-      id: i,
-      itemName: data[i].itemName,
-      analytes: data[i].analytes,
-      internalStandard: data[i].internalStandard,
-      qualityAccuracy: data[i].qualityAccuracy,
-      internalConcentration: data[i].internalConcentration,
-    });
-  }
 };
 
 const search = () => {
@@ -285,23 +279,46 @@ const changeClear = (value) => {
   }
 };
 
-// 修改患者信息
-const handleUpdatePatient = () => {
+// ppm 修改
+const handleChangePPM = (val, id) => {
+  form.value.patientQualityVOList.find(
+    (item) => item.id === id
+  ).qualityAccuracy = val;
+};
 
-  console.log(form.value);
-  // updatePatient({ id: router.currentRoute.value.params.id, }).then((res) => {
-  //   const result = getAPIResponse(res);
-  //   console.log(result);
-  // });
-}
+// 更新患者信息
+const handleUpdatePatient = () => {
+  const params = {
+    age: form.value.age,
+    checkDate: form.value.checkDate.substring(0, 10),
+    id: router.currentRoute.value.params.id,
+    name: form.value.name,
+    remark: form.value.remark,
+    sampleCode: form.value.sampleCode,
+    sampleStatus: form.value.sampleStatus,
+    sex: form.value.sex,
+    patientQualityDTOList: form.value.patientQualityVOList,
+  };
+
+  updatePatient(params).then((res) => {
+    const result = getAPIResponse(res);
+    if (result) {
+      form.value = Object.assign({}, result);
+      message.success(`保存成功`);
+    }
+  });
+};
 
 // 评分计算
 const handleScoresCalculation = () => {
-  scoresCalculation({ id: router.currentRoute.value.params.id, }).then((res) => {
+  scoresCalculation({ id: router.currentRoute.value.params.id }).then((res) => {
     const result = getAPIResponse(res);
-    console.log(result);
+    if (result) {
+      form.value.scores = result;
+      message.success(`计算成功`);
+    }
   });
-}
+};
 
 const handleChangePage = (page, size) => {
   pagination.current = page;

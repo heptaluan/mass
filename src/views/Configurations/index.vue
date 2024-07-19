@@ -5,9 +5,9 @@
         <!-- <img src="../../assets/logo.png" /> -->
         <span>质谱数据分析软件</span>
       </div>
-      <div class="page-title">
+      <!-- <div class="page-title">
         <span>系统设置</span>
-      </div>
+      </div> -->
       <a-menu
         id="menu"
         v-model:openKeys="state.openKeys"
@@ -268,6 +268,7 @@ const backHandler = () => {
       flex-direction: row;
       align-items: center;
       justify-content: space-evenly;
+      border-bottom: 1px solid rgb(119, 119, 119);
 
       img {
         max-width: 90px;

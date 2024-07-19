@@ -11,7 +11,7 @@
       :confirm-loading="confirmLoading"
     >
       <div class="add-node-box editBox">
-        <div>
+        <div style="display: flex">
           <a-upload
             name="file"
             accept=".txt"
@@ -30,7 +30,11 @@
             </a-button>
           </a-upload>
           <span className="upload-tips"
-            >支持批量上传，只能上传txt格式的文件且单个文件大小不超过5MB</span
+            ><icon-font
+              type="icon-jinggao"
+              style="font-size: 16px; margin-right: 5px"
+            />
+            支持批量上传，只能上传txt格式的文件且单个文件大小不超过5MB</span
           >
         </div>
 
@@ -96,8 +100,14 @@ import {
   queryAppendixList,
   removeAppendixList,
   uploadAppendixList,
-  concentrationCalculation
+  concentrationCalculation,
 } from "@/api";
+import { createFromIconfontCN } from "@ant-design/icons-vue";
+import IconFontUrl from "../../../assets/iconFont";
+
+const IconFont = createFromIconfontCN({
+  scriptUrl: IconFontUrl,
+});
 
 const userStore = useUserStore();
 const userModal = ref(false);
@@ -108,17 +118,21 @@ const uploading = ref(false);
 
 const fileList = ref([]);
 
-// 计算
+// 浓度计算
 const handleComputed = () => {
+  if (fileList.value.length === 0) {
+    message.error(`请先上传文件！`)
+    return false;
+  }
   concentrationCalculation({
     id: router.currentRoute.value.params.id,
   }).then((res) => {
     const result = getAPIResponse(res);
     if (result) {
-      message.success(result)
+      message.success(result);
     }
   });
-}
+};
 
 const openModal = async (status, selectUser) => {
   userModal.value = status;
@@ -131,14 +145,14 @@ const getFileList = () => {
     refTableId: router.currentRoute.value.params.id,
   }).then((res) => {
     const result = getAPIResponse(res);
-    fileList.value = []
+    fileList.value = [];
     for (let i = 0; i < result.length; i++) {
       fileList.value.push({
         id: i,
         name: result[i].fileName,
         size: result[i].fileSize,
         state: 1,
-      })
+      });
     }
   });
 };
@@ -188,7 +202,7 @@ let fileTarget = 1;
 const handleUpload = (file) => {
   uploading.value = true;
   setTimeout(() => {
-    upload(file)
+    upload(file);
   }, 1000);
 };
 
@@ -204,11 +218,11 @@ const upload = (file) => {
     if (result) {
       console.log(result);
       message.success(`上传成功`);
-      getFileList()
+      getFileList();
     }
     uploading.value = false;
   });
-} 
+};
 
 defineExpose({
   openModal,
@@ -218,6 +232,7 @@ defineExpose({
 <style scoped>
 @import "@/assets/main.css";
 </style>
+
 <style scoped lang="scss">
 .editBox {
   .ant-form {
@@ -239,6 +254,8 @@ defineExpose({
     font-size: 12px;
     color: #ff9900;
     margin-left: 10px;
+    display: flex;
+    align-items: center;
   }
 
   .upload-content {
